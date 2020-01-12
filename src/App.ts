@@ -40,6 +40,7 @@ function load_configuration(): IConfig | null {
     return require(confFile);
 }
 
+process.on("uncaughtException", (error) => Logger.LogError(Logger.Severity.Error, error));
 const conf = load_configuration();
 if (conf) {
     new App(conf).run();

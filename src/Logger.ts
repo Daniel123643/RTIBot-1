@@ -16,4 +16,8 @@ export namespace Logger {
     export function LogMessage(severity: Severity, message: Message) {
         Log(severity, `msg: ${message.author.username} - ${message.content}`);
     }
+
+    export function LogError(severity: Severity, error: Error) {
+        Log(severity, `err: ${error.name} - ${error.message} | ${error.stack}`);
+    }
 }
