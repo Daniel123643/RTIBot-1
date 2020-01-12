@@ -1,4 +1,6 @@
 {
+    "prefix": "!",
     "apiKey": "",
-    "ownerId": "128974046086955009"
+    "ownerId": "128974046086955009",
+    "activityString": "Nodejs"
 }

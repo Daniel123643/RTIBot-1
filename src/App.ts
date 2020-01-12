@@ -1,4 +1,5 @@
-import { Client, Message } from "discord.js";
+import { CommandoClient, CommandoClientOptions } from "discord.js-commando";
+import * as path from "path";
 import { IConfig } from "./Config";
 import { Logger } from "./Logger";
 
@@ -6,15 +7,28 @@ class App {
     constructor(private config: IConfig) {}
 
     public run() {
-        const client = new Client();
+        const client = new CommandoClient({
+            commandPrefix: this.config.prefix,
+            owner: this.config.ownerId,
+        });
+        client.registry
+            .registerDefaultTypes()
+            .registerGroups([
+                // ["account", "Account linking and management"],
+                // ["raids", "Raid group creation and management"],
+                // ["admin", "Bot management"],
+            ])
+            .registerDefaultGroups()
+            .registerDefaultCommands()
+            .registerCommandsIn(path.join(__dirname, "commands"));
 
         client.once("ready", () => {
-            Logger.Log(Logger.Severity.Info, "Ready");
+            if (this.config.activityString) {
+                client.user.setActivity(this.config.activityString);
+            }
         });
-        client.on("message", (msg: Message) => {
-            if (msg.author.bot) { return; }
-
-            Logger.LogMessage(Logger.Severity.Debug, msg);
+        client.on("error", (error) => {
+            Logger.LogError(Logger.Severity.Error, error);
         });
         client.login(this.config.apiKey);
     }

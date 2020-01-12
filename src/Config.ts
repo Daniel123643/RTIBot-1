@@ -1,4 +1,6 @@
 export interface IConfig {
+    prefix: string;
     apiKey: string;
-    ownerId: number;
+    ownerId: string;
+    activityString: string | undefined;
 }
