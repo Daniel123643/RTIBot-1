@@ -9,7 +9,8 @@
             "options": [120]
         },
         "no-console": false,
-        "semicolon": true
+        "semicolon": true,
+        "no-namespace": false
     },
     "rulesDirectory": []
 }
