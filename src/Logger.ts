@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 export namespace Logger {
     export enum Severity {
         Debug = "Debug",
@@ -9,5 +11,9 @@ export namespace Logger {
         const timeStr = new Date().toISOString().replace(/T/, " ").replace(/\..+/, "");
         const formattedMsg = `[${timeStr}][${severity}] ${msg}`;
         console.log(formattedMsg);
+    }
+
+    export function LogMessage(severity: Severity, message: Message) {
+        Log(severity, `msg: ${message.author.username} - ${message.content}`);
     }
 }

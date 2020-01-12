@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, Message } from "discord.js";
 import { IConfig } from "./Config";
 import { Logger } from "./Logger";
 
@@ -6,12 +6,17 @@ class App {
     constructor(private config: IConfig) {}
 
     public run() {
-        Logger.Log(Logger.Severity.Info, "asdf");
         const client = new Client();
+
         client.once("ready", () => {
             Logger.Log(Logger.Severity.Info, "Ready");
         });
-        // client.login(config.apiKey);
+        client.on("message", (msg: Message) => {
+            if (msg.author.bot) { return; }
+
+            Logger.LogMessage(Logger.Severity.Debug, msg);
+        });
+        client.login(this.config.apiKey);
     }
 }
 
