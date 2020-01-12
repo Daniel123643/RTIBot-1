@@ -1,0 +1,26 @@
+{
+  "name": "rtibot",
+  "version": "1.0.0",
+  "description": "a discord bot",
+  "main": "dist/App.js",
+  "dependencies": {
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^13.1.6",
+    "discord.js": "^11.5.1",
+    "mocha": "^6.2.0",
+    "typescript": "^3.6.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "eslint": "^6.4.0",
+    "eslint-config-google": "^0.14.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.6.3"
+  },
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "author": "Hampus Adolfsson",
+  "license": "ISC"
+}
