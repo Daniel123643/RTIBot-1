@@ -9,7 +9,8 @@
     "discord.js": "^11.5.1",
     "discord.js-commando": "^0.10.0",
     "mocha": "^6.2.0",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "ms": "^2.1.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.3.1",

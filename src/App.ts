@@ -14,12 +14,12 @@ class App {
         client.registry
             .registerDefaultTypes()
             .registerGroups([
-                // ["account", "Account linking and management"],
-                // ["raids", "Raid group creation and management"],
-                // ["admin", "Bot management"],
+                ["account", "Account linking and management"],
+                ["raids", "Raid group creation and management"],
+                ["admin", "Bot management"],
             ])
             .registerDefaultGroups()
-            .registerDefaultCommands()
+            .registerDefaultCommands({ eval_: false })
             .registerCommandsIn(path.join(__dirname, "commands"));
 
         client.once("ready", () => {
