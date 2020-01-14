@@ -10,7 +10,9 @@
         },
         "no-console": false,
         "semicolon": true,
-        "no-namespace": false
+        "no-namespace": false,
+        "arrow-parens": false,
+        "max-classes-per-file": false
     },
     "rulesDirectory": []
 }

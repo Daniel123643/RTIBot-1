@@ -1,6 +1,6 @@
 import { Message, RichEmbed } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
-import * as ms from "ms";
+import { duration } from "moment";
 import * as os from "os";
 
 export class StatusCommand extends Command {
@@ -17,9 +17,6 @@ export class StatusCommand extends Command {
                args: string | object | string[],
                fromPattern: boolean): Promise<Message | Message[]> {
         const uptime = os.uptime();
-        // const uptimeD = Math.floor(uptime / 24*600);
-        // const uptimeH = Math.floor(uptime / 60);
-        const uptimeS = uptime % 60;
         const load = os.loadavg()[1];  // use 5 min avg
         const rel = os.release();
 
@@ -27,7 +24,7 @@ export class StatusCommand extends Command {
                 .setColor("#00ff00")
                 .setTitle("Bot Status")
                 .setDescription("Ok!")
-                .addField("Uptime", ms(uptime * 1000), true)
+                .addField("Uptime", duration(uptime, "seconds").humanize(), true)
                 .addField("Average Load", load.toFixed(4), true)
                 .addField("Kernel", rel, true);
         return message.say(embed);
