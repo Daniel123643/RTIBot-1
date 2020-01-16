@@ -1,49 +1,26 @@
-import { DMChannel, GroupDMChannel, Message, RichEmbed, TextChannel, MessageReaction, User } from "discord.js";
+import { DMChannel, GroupDMChannel, Message, MessageReaction, RichEmbed, TextChannel, User } from "discord.js";
 import { utc } from "moment";
 import { PersistentView } from "./base/PersistentView";
 import { RaidEntry } from "./RaidEntry";
 
+/**
+ * Displays and controls a raid schedule entry
+ */
 export class RaidEntryController {
-    public static loadFromMessage(message: Message) {
-        return new RaidEntryController(new PersistentView(message));
+    public static loadFromMessage(message: Message, data: RaidEntry) {
+        return new RaidEntryController(new PersistentView(message), data);
     }
 
-    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel): Promise<RaidEntryController> {
-        return new RaidEntryController(await PersistentView.createInChannel(channel, "Placeholder."));
+    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel,
+                                        data: RaidEntry): Promise<RaidEntryController> {
+        return new RaidEntryController(await PersistentView.createInChannel(channel, "Placeholder."), data);
     }
 
-    private data: RaidEntry;
-
-    constructor(private view: PersistentView) {
-        this.data = {
-            description: "300 gold entry fee",
-            endDate: utc(),
-            id: 0,
-            name: "Deimos CM",
-            roles: [{
-                emoji: "🧠",
-                name: "Chronomancer",
-                participants: ["Orineth"],
-                reqQuantity: 1,
-            },
-            {
-                emoji: "💪",
-                name: "Power DPS",
-                participants: ["Eludore Moonfall", "Taiumor"],
-                reqQuantity: 5,
-            },
-            {
-                emoji: "🐅",
-                name: "Druid",
-                participants: [],
-                reqQuantity: 2,
-            }],
-            startDate: utc(),
-        };
+    constructor(private view: PersistentView, private data: RaidEntry) {
         this.updateView();
 
         Promise.all(this.data.roles.map(role => {
-            this.view.message.react(role.emoji); // TODO: maybe make sure order is consistent
+            this.view.message.react(role.emojiName); // TODO: maybe make sure order is consistent
         }));
 
         const filter = (reaction: MessageReaction, user: User) => {
@@ -51,7 +28,7 @@ export class RaidEntryController {
         };
         const collector = this.view.message.createReactionCollector(filter);
         collector.on("collect", (reaction: MessageReaction, _) => {
-            const role = this.data.roles.find(r => r.emoji === reaction.emoji.name);
+            const role = this.data.roles.find(r => r.emojiName === reaction.emoji.name);
             if (role) {
                 this.checkRoleReaction(role, reaction);
             } else {
@@ -77,7 +54,7 @@ export class RaidEntryController {
             .setFooter("To register, react with the role you want to play.");
         this.data.roles.forEach(role => {
             const names = role.participants.length > 0 ? role.participants.join("\n") : "...";
-            const title = `${role.emoji} **${role.name}** (${role.participants.length}/${role.reqQuantity})`;
+            const title = `${role.emojiName} **${role.name}** (${role.participants.length}/${role.reqQuantity})`;
             content.addField(title, names, true);
         });
         return content;

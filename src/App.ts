@@ -2,6 +2,7 @@ import { CommandoClient, CommandoClientOptions } from "discord.js-commando";
 import * as path from "path";
 import { IConfig } from "./Config";
 import { Logger } from "./Logger";
+import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
 
 class App {
     constructor(private config: IConfig) {}
@@ -18,6 +19,7 @@ class App {
                 ["raids", "Raid group creation and management"],
                 ["admin", "Bot management"],
             ])
+            .registerType(new RaidRolesArgumentType(client, "roles"))
             .registerDefaultGroups()
             .registerDefaultCommands({ eval_: false })
             .registerCommandsIn(path.join(__dirname, "commands"));
