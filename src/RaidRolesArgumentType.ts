@@ -1,5 +1,5 @@
 import { Argument, ArgumentType, CommandMessage } from "discord.js-commando";
-import { RaidRole } from "./RaidEntry";
+import { RaidRole } from "./RaidEvent";
 
 /**
  * A command argument specifying a set of raid roles

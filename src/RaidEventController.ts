@@ -1,22 +1,22 @@
 import { DMChannel, GroupDMChannel, Message, MessageReaction, RichEmbed, TextChannel, User } from "discord.js";
 import { utc } from "moment";
 import { PersistentView } from "./base/PersistentView";
-import { RaidEntry } from "./RaidEntry";
+import { RaidEvent } from "./RaidEvent";
 
 /**
- * Displays and controls a raid schedule entry
+ * Displays and controls a raid schedule event
  */
-export class RaidEntryController {
-    public static loadFromMessage(message: Message, data: RaidEntry) {
-        return new RaidEntryController(new PersistentView(message), data);
+export class RaidEventController {
+    public static loadFromMessage(message: Message, data: RaidEvent) {
+        return new RaidEventController(new PersistentView(message), data);
     }
 
     public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel,
-                                        data: RaidEntry): Promise<RaidEntryController> {
-        return new RaidEntryController(await PersistentView.createInChannel(channel, "Placeholder."), data);
+                                        data: RaidEvent): Promise<RaidEventController> {
+        return new RaidEventController(await PersistentView.createInChannel(channel, "Placeholder."), data);
     }
 
-    constructor(private view: PersistentView, private data: RaidEntry) {
+    constructor(private view: PersistentView, private data: RaidEvent) {
         this.updateView();
 
         Promise.all(this.data.roles.map(role => {

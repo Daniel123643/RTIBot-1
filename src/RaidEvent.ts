@@ -2,9 +2,9 @@ import { GuildMember } from "discord.js";
 import { Moment } from "moment";
 
 /**
- * A raid schedule entry
+ * A raid schedule event
  */
-export class RaidEntry {
+export class RaidEvent {
     public id: number;
     public startDate: Moment;
     public endDate: Moment;
@@ -24,7 +24,7 @@ export class RaidRole {
 }
 
 /**
- * A player participating in a raid
+ * A player participating in a raid event
  */
 export class RaidParticipant {
     public member: GuildMember;
