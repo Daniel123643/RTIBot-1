@@ -1,8 +1,9 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
-import { RaidEntryController } from "../RaidEntryController";
+import { RaidEventController } from "../RaidEventController";
 import moment = require("moment");
-import { RaidRole } from "../RaidEntry";
+import { RaidRole, RaidEvent } from "../RaidEvent";
+import { RaidScheduleChannel } from "../RaidScheduleChannel";
 
 export class AddRaidCommand extends Command {
     constructor(client: CommandoClient) {
@@ -68,13 +69,17 @@ export class AddRaidCommand extends Command {
         const endDate = startDate.clone();
         endDate.add(args.hours, "hours");
 
-        RaidEntryController.createInChannel(message.channel, {
+        const raidEvent: RaidEvent = {
             description: args.description,
             endDate,
             id: 0,
             name: args.name,
             roles: args.roles,
             startDate,
+        };
+
+        RaidScheduleChannel.createInChannel(message.channel as TextChannel, []).then(schedule => {
+            schedule.addRaidEvent(raidEvent);
         });
         message.react("✅");
         message.delete(5000); // TODO: check permissions

@@ -6,7 +6,7 @@
     "jsRules": {},
     "rules": {
         "max-line-length": {
-            "options": [120]
+            "severity": "off"
         },
         "no-console": false,
         "semicolon": true,
