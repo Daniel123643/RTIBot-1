@@ -1,8 +1,10 @@
 import { CommandoClient, CommandoClientOptions } from "discord.js-commando";
 import * as path from "path";
 import { IConfig } from "./Config";
+import { GuildRaidService } from "./GuildRaidService";
 import { Logger } from "./Logger";
 import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
+import { RaidSchedulesController } from "./RaidSchedulesController";
 
 class App {
     constructor(private config: IConfig) {}
@@ -16,7 +18,8 @@ class App {
             .registerDefaultTypes()
             .registerGroups([
                 ["account", "Account linking and management"],
-                ["raids", "Raid group creation and management"],
+                ["raids", "Raid event creation and management"],
+                ["composition", "Raid comps creation and management"],
                 ["admin", "Bot management"],
             ])
             .registerType(new RaidRolesArgumentType(client, "roles"))
@@ -28,6 +31,7 @@ class App {
             if (this.config.activityString) {
                 client.user.setActivity(this.config.activityString);
             }
+            GuildRaidService.instantiateWithSavedData(client);
         });
         client.on("error", (error) => {
             Logger.LogError(Logger.Severity.Error, error);

@@ -4,6 +4,7 @@ import { RaidEventController } from "../RaidEventController";
 import moment = require("moment");
 import { RaidRole, RaidEvent } from "../RaidEvent";
 import { RaidScheduleChannel } from "../RaidScheduleChannel";
+import { GuildRaidService } from "../GuildRaidService";
 
 export class AddRaidCommand extends Command {
     constructor(client: CommandoClient) {
@@ -79,11 +80,8 @@ export class AddRaidCommand extends Command {
             startDate,
         };
 
-        RaidScheduleChannel.createInChannel(message.channel as TextChannel, []).then(schedule => {
-            schedule.addRaidEvent(raidEvent);
-        });
+        GuildRaidService.getInstance(message.guild).addRaid(raidEvent);
         message.react("✅");
-        message.delete(5000); // TODO: check permissions
-        return Promise.reject();
+        return message.delete(5000); // TODO: check permissions
     }
 }
