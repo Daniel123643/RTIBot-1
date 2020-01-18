@@ -1,10 +1,8 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
-import { RaidEventController } from "../RaidEventController";
 import moment = require("moment");
-import { RaidRole, RaidEvent } from "../RaidEvent";
-import { RaidScheduleChannel } from "../RaidScheduleChannel";
-import { GuildRaidService } from "../GuildRaidService";
+import { RaidRole, RaidEvent } from "../raids/RaidEvent";
+import { RtiBotGuild } from "../RtiBotGuild";
 
 export class AddRaidCommand extends Command {
     constructor(client: CommandoClient) {
@@ -80,7 +78,7 @@ export class AddRaidCommand extends Command {
             startDate,
         };
 
-        GuildRaidService.getInstance(message.guild).addRaid(raidEvent);
+        RtiBotGuild.get(message.guild).raidService.addRaid(raidEvent);
         message.react("✅");
         return message.delete(5000); // TODO: check permissions
     }

@@ -10,4 +10,13 @@ export namespace Util {
         str = str.replace(/[^a-z0-9-]/, "");
         return str;
     }
+
+    /**
+     * Resolves an array of promises sequentially, so that order is deterministic
+     */
+    export async function resolvePromisesSeq<T>(promises: Array<Promise<T>>): Promise<void> {
+        for (const prom in promises) {
+            await prom;
+        }
+    }
 }

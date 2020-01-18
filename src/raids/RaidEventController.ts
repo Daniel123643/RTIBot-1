@@ -1,10 +1,11 @@
 import { DMChannel, GroupDMChannel, Message, MessageReaction, RichEmbed, TextChannel, User } from "discord.js";
-import { utc } from "moment";
-import { PersistentView } from "./base/PersistentView";
+import { PersistentView } from "../base/PersistentView";
+import { ReactionButtonSet } from "../base/ReactionButtonSet";
+import { Logger } from "../Logger";
 import { RaidEvent } from "./RaidEvent";
 
 /**
- * Displays and controls a raid schedule event
+ * Displays and controls a raid event
  */
 export class RaidEventController {
     public static loadFromMessage(message: Message, data: RaidEvent) {
@@ -16,26 +17,26 @@ export class RaidEventController {
         return new RaidEventController(await PersistentView.createInChannel(channel, "Placeholder."), data);
     }
 
+    private static readonly EMOJI_REGISTER = "✅";
+    private static readonly EMOJI_EDIT = "⚙️";
+    private static readonly EMOJI_CANCEL = "❌";
+
+    private buttons: ReactionButtonSet;
+
     constructor(private view: PersistentView, private data: RaidEvent) {
         this.updateView();
-
-        Promise.all(this.data.roles.map(role => {
-            this.view.message.react(role.emojiName); // TODO: maybe make sure order is consistent
-        }));
-
-        const filter = (reaction: MessageReaction, user: User) => {
-            return !user.bot;
-        };
-        const collector = this.view.message.createReactionCollector(filter);
-        collector.on("collect", (reaction: MessageReaction, _) => {
-            const role = this.data.roles.find(r => r.emojiName === reaction.emoji.name);
-            if (role) {
-                this.checkRoleReaction(role, reaction);
-            } else {
-                // TODO: check permissions (manage messages)
-                for (const user of reaction.users.values()) {
-                    reaction.remove(user);
-                }
+        this.buttons = new ReactionButtonSet(view.message, [RaidEventController.EMOJI_REGISTER,
+                                                            RaidEventController.EMOJI_EDIT,
+                                                            RaidEventController.EMOJI_CANCEL]);
+        this.buttons.buttonPressed.attach(emoji => {
+            Logger.Log(Logger.Severity.Debug, "Button " + emoji + " pressed.");
+            switch (emoji) {
+                case RaidEventController.EMOJI_REGISTER:
+                    break;
+                case RaidEventController.EMOJI_EDIT:
+                    break;
+                case RaidEventController.EMOJI_CANCEL:
+                    break;
             }
         });
     }

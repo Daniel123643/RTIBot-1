@@ -1,10 +1,10 @@
 import { CommandoClient, CommandoClientOptions } from "discord.js-commando";
 import * as path from "path";
 import { IConfig } from "./Config";
-import { GuildRaidService } from "./GuildRaidService";
 import { Logger } from "./Logger";
 import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
-import { RaidSchedulesController } from "./RaidSchedulesController";
+import { GuildRaidService } from "./raids/GuildRaidService";
+import { RtiBotGuild } from "./RtiBotGuild";
 
 class App {
     constructor(private config: IConfig) {}
@@ -31,7 +31,7 @@ class App {
             if (this.config.activityString) {
                 client.user.setActivity(this.config.activityString);
             }
-            GuildRaidService.instantiateWithSavedData(client);
+            RtiBotGuild.loadSavedData(client);
         });
         client.on("error", (error) => {
             Logger.LogError(Logger.Severity.Error, error);

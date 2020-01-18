@@ -1,6 +1,6 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
-import { GuildRaidService } from "../GuildRaidService";
+import { RtiBotGuild } from "../RtiBotGuild";
 
 export class RaidScheduleCommand extends Command {
     // TODO: permissions
@@ -16,7 +16,7 @@ export class RaidScheduleCommand extends Command {
     }
 
     public run(message: CommandMessage): Promise<Message | Message[]> {
-        GuildRaidService.getInstance(message.guild).addScheduleIn(message.channel as TextChannel);
+        RtiBotGuild.get(message.guild).raidService.addScheduleIn(message.channel as TextChannel);
         message.react("✅");
         return Promise.resolve(message.delete(5000));
     }
