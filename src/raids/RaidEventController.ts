@@ -60,13 +60,4 @@ export class RaidEventController {
         });
         return content;
     }
-
-    private checkRoleReaction(role, reaction: MessageReaction) {
-        const actualUsers = reaction.users.filter(user => !user.bot);
-        // TODO: change to id based comparison
-        const newUsers = actualUsers.filter(user => !role.participants.some(part => user.username === part));
-        role.participants.push(newUsers.map(user => user.username));
-        role.participants = role.participants.filter(part => actualUsers.some(user => user.username === part));
-        this.updateView();
-    }
 }
