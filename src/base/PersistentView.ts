@@ -1,4 +1,4 @@
-import { DMChannel, GroupDMChannel, Message, TextChannel } from "discord.js";
+import { DMChannel, GroupDMChannel, Message, RichEmbed, TextChannel } from "discord.js";
 import { Logger } from "../Logger";
 
 /**
@@ -25,8 +25,9 @@ export class PersistentView {
     /**
      * Set what's displayed in the view
      */
-    public setContent(content: any) {
+    public setContent(content: RichEmbed) {
         if (this.message.editable) {
+            content.setTimestamp(new Date());
             this.message.edit(content);
         } else {
             Logger.Log(Logger.Severity.Error, "Trying to edit uneditable message: " + this.message.cleanContent);
