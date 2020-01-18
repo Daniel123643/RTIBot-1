@@ -49,7 +49,7 @@ export class RaidEventController {
         const endString = this.data.endDate.format("HH:mm");
         const content = new RichEmbed()
             .setTitle(`${this.data.name} @ ${startString}-${endString}`)
-            .setDescription(this.data.description)
+            .setDescription(this.data.description + "\n**Leader:** " + this.data.leader)
             .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg")
             .setFooter("To register, react with the role you want to play.");
         this.data.roles.forEach(role => {

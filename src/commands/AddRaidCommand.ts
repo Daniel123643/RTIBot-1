@@ -73,6 +73,7 @@ export class AddRaidCommand extends Command {
             description: args.description,
             endDate,
             id: 0,
+            leader: message.author,
             name: args.name,
             roles: args.roles,
             startDate,

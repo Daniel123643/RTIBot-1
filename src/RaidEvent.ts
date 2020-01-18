@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, User } from "discord.js";
 import { Moment } from "moment";
 
 /**
@@ -10,6 +10,7 @@ export class RaidEvent {
     public endDate: Moment;
     public name: string;
     public description: string;
+    public leader: User;
     public roles: RaidRole[];
 }
 
