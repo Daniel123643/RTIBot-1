@@ -1,10 +1,10 @@
-import { Guild, TextChannel } from "discord.js";
+import { Guild, TextChannel, CategoryChannel } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { Util } from "../Util";
 import { RaidEvent } from "./RaidEvent";
-import { RaidEventController } from "./RaidEventController";
-import { RaidScheduleController } from "./RaidScheduleController";
 import { RaidEventArray } from "./RaidEventArray";
+import { RaidEventChannel } from "./RaidEventChannel";
+import { RaidScheduleController } from "./RaidScheduleController";
 
 /**
  * Provides raid services for a guild
@@ -30,8 +30,7 @@ export class GuildRaidService {
             position: this.events.indexOf(raidEvent),  // ensures the channel list is sorted
             type: "text",
         }) as TextChannel;
-        const ctr = await RaidEventController.createInChannel(channel, raidEvent);
-        ctr.message.pin();
+        await RaidEventChannel.createInChannel(channel, raidEvent);
     }
 
     /**
