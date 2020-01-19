@@ -18,8 +18,8 @@ export class MenuPrompt extends UserPrompt<number> {
         //   `2.` this
         const prompt = textPrompt
                        + "\n"
-                       + options.map((opt, i) => `  \`${i + 1}.\` ${opt}\n`)
-                       + "Please type in a number to select an option.";
+                       + options.map((opt, i) => `  \`${i + 1}.\` ${opt}`).join("\n")
+                       + "\nPlease type in a number to select an option.";
         super(prompt, user, channel);
         this.options = options;
     }
@@ -38,6 +38,6 @@ export class MenuPrompt extends UserPrompt<number> {
 
     protected parse(message: Message): number {
         const matches = message.content.trim().match(/^(?<i>\d+)\.*$/);
-        return Number(matches!.groups!.i);
+        return Number(matches!.groups!.i) - 1;
     }
 }
