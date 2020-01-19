@@ -7,8 +7,8 @@ export class RaidScheduleCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["rs"],
-            description: "Prints a compact schedule of  all raids, that is continously updated.",
-            group: "raids",
+            description: "Prints a compact schedule of all raids, that is continously updated.",
+            group: "setup",
             guildOnly: true,
             memberName: "raidschedule",
             name: "raidschedule",

@@ -20,6 +20,7 @@ class App {
                 ["raids", "Raid event creation and management"],
                 ["composition", "Raid comps creation and management"],
                 ["admin", "Bot management"],
+                ["setup", "Commands to only call once per server"],
             ])
             .registerType(new RaidRolesArgumentType(client, "roles"))
             .registerDefaultGroups()

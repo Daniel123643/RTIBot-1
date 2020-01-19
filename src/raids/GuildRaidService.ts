@@ -15,18 +15,25 @@ export class GuildRaidService {
     private events = new RaidEventArray();
     private scheduleControllers: RaidScheduleController[] = [];
 
-    public constructor(private guild: Guild) {}
+    private channelCategory: CategoryChannel | undefined;
+
+    public constructor(private guild: Guild) {
+    }
 
     /**
      * Adds a new raid event in this guild, creating a channel for it
      * @param raidEvent The event to add
      */
     public async addRaid(raidEvent: RaidEvent) {
+        if (!this.channelCategory) {
+            throw new Error("No channel category has been set for raids in this server.");
+        }
         raidEvent.id = this.nextEventId++;
         this.events.add(raidEvent);
         this.updateSchedules();
 
         const channel = await this.guild.channels.create(Util.toTextChannelName(raidEvent.name), {
+            parent: this.channelCategory,
             position: this.events.indexOf(raidEvent),  // ensures the channel list is sorted
             type: "text",
         }) as TextChannel;
@@ -41,6 +48,14 @@ export class GuildRaidService {
         const view = await PersistentView.createInChannel(channel, "Placeholder.");
         this.scheduleControllers.push(new RaidScheduleController(view));
         this.updateSchedules();
+    }
+
+    /**
+     * Sets the channel cateogry to create raid event text channels in
+     * @param category The category to use
+     */
+    public setChannelCategory(category: CategoryChannel) {
+        this.channelCategory = category;
     }
 
     private async updateSchedules() {
