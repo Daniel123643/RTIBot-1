@@ -1,4 +1,4 @@
-import { DMChannel, GroupDMChannel, Message, TextChannel, User } from "discord.js";
+import { DMChannel, Message, TextChannel, User } from "discord.js";
 import { UserPrompt } from "./UserPrompt";
 
 // Some common prompts
@@ -11,7 +11,7 @@ export class MenuPrompt extends UserPrompt<number> {
     private options: string[];
     public constructor(textPrompt: string,
                        user: User,
-                       channel: TextChannel | DMChannel | GroupDMChannel,
+                       channel: TextChannel | DMChannel,
                        options: string[]) {
         // Formats the options:
         //   `1.` like

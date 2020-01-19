@@ -1,11 +1,9 @@
-import { CommandoClient, CommandoClientOptions } from "discord.js-commando";
+import { CommandoClient } from "discord.js-commando";
 import * as path from "path";
 import { IConfig } from "./Config";
 import { Logger } from "./Logger";
 import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
-import { GuildRaidService } from "./raids/GuildRaidService";
 import { RtiBotGuild } from "./RtiBotGuild";
-import { Collection } from "discord.js";
 
 class App {
     constructor(private config: IConfig) {}
@@ -25,12 +23,12 @@ class App {
             ])
             .registerType(new RaidRolesArgumentType(client, "roles"))
             .registerDefaultGroups()
-            .registerDefaultCommands({ eval_: false })
+            .registerDefaultCommands({ eval: false })
             .registerCommandsIn(path.join(__dirname, "commands"));
 
         client.once("ready", () => {
             if (this.config.activityString) {
-                client.user.setActivity(this.config.activityString);
+                client.user?.setActivity(this.config.activityString);
             }
             RtiBotGuild.loadSavedData(client);
         });

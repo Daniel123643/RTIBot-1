@@ -33,7 +33,7 @@ export class ReactionButtonSet {
             }
             // TODO: check permissions (manage messages)
             for (const user of reaction.users.values()) {
-                if (!user.bot) { reaction.remove(user); }
+                if (!user.bot) { reaction.users.remove(user); }
             }
         });
     }
@@ -44,9 +44,7 @@ export class ReactionButtonSet {
             this.emojis.forEach(emoji => {
                 const reaction = this.message.reactions.get(emoji);
                 if (reaction) {
-                    for (const user of reaction.users.values()) {
-                        reaction.remove(user);
-                    }
+                    reaction.users.remove();
                 }
             });
         }

@@ -6,8 +6,8 @@
   "dependencies": {
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.6",
-    "discord.js": "^11.5.1",
-    "discord.js-commando": "^0.10.0",
+    "discord.js": "github:discordjs/discord.js",
+    "discord.js-commando": "github:discordjs/Commando",
     "mocha": "^6.2.0",
     "moment": "^2.24.0"
   },
@@ -17,7 +17,7 @@
     "eslint": "^6.4.0",
     "eslint-config-google": "^0.14.0",
     "tslint": "^5.20.1",
-    "typescript": "^3.6.3"
+    "typescript": "^3.7"
   },
   "scripts": {
     "tsc": "tsc"

@@ -1,7 +1,8 @@
-import { Message, RichEmbed, TextChannel } from "discord.js";
-import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
+import { Message } from "discord.js";
+import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import moment = require("moment");
-import { RaidRole, RaidEvent } from "../raids/RaidEvent";
+import { Logger } from "../Logger";
+import { RaidEvent, RaidRole } from "../raids/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
 
 export class AddRaidCommand extends Command {
@@ -55,13 +56,13 @@ export class AddRaidCommand extends Command {
         });
     }
 
-    public run(message: CommandMessage,
-               args: { name: string,
-                       description: string,
-                       date: moment.Moment,
-                       starttime: moment.Moment,
-                       roles: RaidRole[],
-                       hours: number }): Promise<Message | Message[]> {
+    public async run(message: CommandoMessage,
+                     args: { name: string,
+                             description: string,
+                             date: moment.Moment,
+                             starttime: moment.Moment,
+                             roles: RaidRole[],
+                             hours: number }): Promise<Message | Message[]> {
         const startDate = args.date;
         startDate.hours(args.starttime.hours());
         startDate.minutes(args.starttime.minutes());
@@ -78,8 +79,14 @@ export class AddRaidCommand extends Command {
             args.roles,
         );
 
-        RtiBotGuild.get(message.guild).raidService.addRaid(raidEvent);
-        message.react("✅");
-        return message.delete(5000); // TODO: check permissions
+        try {
+            await RtiBotGuild.get(message.guild).raidService.addRaid(raidEvent);
+            message.react("✅");
+            return message.delete(5000); // TODO: check permissions
+        } catch (err) {
+            Logger.LogError(Logger.Severity.Info, err);
+            message.react("❌");
+            return message.reply(`The command failed:\n${err}`);
+        }
     }
 }

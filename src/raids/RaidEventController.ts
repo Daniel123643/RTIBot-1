@@ -1,10 +1,10 @@
-import { DMChannel, GroupDMChannel, Message, RichEmbed, TextChannel, User, Channel } from "discord.js";
+import { DMChannel, Message, MessageEmbed, TextChannel, User } from "discord.js";
+import moment = require("moment");
 import { PersistentView } from "../base/PersistentView";
+import { MenuPrompt } from "../base/prompt/PromptHelpers";
 import { ReactionButtonSet } from "../base/ReactionButtonSet";
 import { Logger } from "../Logger";
 import { RaidEvent, RaidParticipant } from "./RaidEvent";
-import { MenuPrompt } from "../base/prompt/PromptHelpers";
-import moment = require("moment");
 
 /**
  * Displays and controls a raid event
@@ -14,7 +14,7 @@ export class RaidEventController {
         return new RaidEventController(new PersistentView(message), data);
     }
 
-    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel,
+    public static async createInChannel(channel: TextChannel | DMChannel,
                                         data: RaidEvent): Promise<RaidEventController> {
         return new RaidEventController(await PersistentView.createInChannel(channel, "Placeholder."), data);
     }
@@ -52,10 +52,10 @@ export class RaidEventController {
         this.view.setContent(this.generateContent());
     }
 
-    private generateContent(): RichEmbed {
+    private generateContent(): MessageEmbed {
         const startString = this.data.startDate.format("ddd D MMM HH:mm");
         const endString = this.data.endDate.format("HH:mm");
-        const content = new RichEmbed()
+        const content = new MessageEmbed()
             .setTitle(`${this.data.name} @ ${startString}-${endString}`)
             .setDescription(this.data.description + "\n**Leader:** " + this.data.leader)
             .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg")
@@ -69,7 +69,7 @@ export class RaidEventController {
         return content;
     }
 
-    private async registerParticipant(user: User, errorChannel: TextChannel | DMChannel | GroupDMChannel) {
+    private async registerParticipant(user: User, errorChannel: TextChannel | DMChannel) {
         try {
             const dmc = await user.createDM();
             dmc.send("You are registering for the event \"" + this.data.name + "\"");

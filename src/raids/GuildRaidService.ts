@@ -1,4 +1,4 @@
-import { Guild, TextChannel, CategoryChannel } from "discord.js";
+import { CategoryChannel, Guild, TextChannel } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { Util } from "../Util";
 import { RaidEvent } from "./RaidEvent";
@@ -26,7 +26,7 @@ export class GuildRaidService {
         this.events.add(raidEvent);
         this.updateSchedules();
 
-        const channel = await this.guild.createChannel(Util.toTextChannelName(raidEvent.name), {
+        const channel = await this.guild.channels.create(Util.toTextChannelName(raidEvent.name), {
             position: this.events.indexOf(raidEvent),  // ensures the channel list is sorted
             type: "text",
         }) as TextChannel;
