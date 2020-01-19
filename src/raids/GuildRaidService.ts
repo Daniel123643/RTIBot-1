@@ -4,6 +4,7 @@ import { Util } from "../Util";
 import { RaidEvent } from "./RaidEvent";
 import { RaidEventController } from "./RaidEventController";
 import { RaidScheduleController } from "./RaidScheduleController";
+import { RaidEventArray } from "./RaidEventArray";
 
 /**
  * Provides raid services for a guild
@@ -11,7 +12,7 @@ import { RaidScheduleController } from "./RaidScheduleController";
 export class GuildRaidService {
     private nextEventId = 0;
 
-    private events: RaidEvent[] = [];
+    private events = new RaidEventArray();
     private scheduleControllers: RaidScheduleController[] = [];
 
     public constructor(private guild: Guild) {}
@@ -22,12 +23,15 @@ export class GuildRaidService {
      */
     public async addRaid(raidEvent: RaidEvent) {
         raidEvent.id = this.nextEventId++;
+        this.events.add(raidEvent);
+        this.updateSchedules();
+
         const channel = await this.guild.createChannel(Util.toTextChannelName(raidEvent.name), {
+            position: this.events.indexOf(raidEvent),  // ensures the channel list is sorted
             type: "text",
         }) as TextChannel;
-        RaidEventController.createInChannel(channel, raidEvent);
-        this.events.push(raidEvent);
-        this.updateSchedules();
+        const ctr = await RaidEventController.createInChannel(channel, raidEvent);
+        ctr.message.pin();
     }
 
     /**
@@ -42,7 +46,7 @@ export class GuildRaidService {
 
     private async updateSchedules() {
         this.scheduleControllers.forEach(ctr => {
-            ctr.updateView(this.events);
+            ctr.updateView(this.events.data);
         });
     }
 }
