@@ -1,12 +1,13 @@
-import { Message, MessageReaction, User, ReactionCollector } from "discord.js";
+import { Message, MessageReaction, ReactionCollector, User } from "discord.js";
 import { Event } from "./Event";
+import { UserPrompt } from "./prompt/UserPrompt";
 
 /**
  * Uses a set of reactions as buttons on a message,
  * and provides callbacks for when a 'button' is pressed
  */
 export class ReactionButtonSet {
-    public buttonPressed: Event<string> = new Event();
+    public buttonPressed: Event<[User, string]> = new Event();
     private collector: ReactionCollector | undefined;
 
     /**
@@ -25,7 +26,10 @@ export class ReactionButtonSet {
         this.collector.on("collect", (reaction: MessageReaction, _) => {
             const em = emojis.find(emoji => emoji === reaction.emoji.name);
             if (em) {
-                this.buttonPressed.trigger(em);
+                const user = reaction.users.filter(u => !u.bot).first();
+                if (user) {
+                    this.buttonPressed.trigger([user, em]);
+                }
             }
             // TODO: check permissions (manage messages)
             for (const user of reaction.users.values()) {

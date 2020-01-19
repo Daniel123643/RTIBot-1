@@ -1,5 +1,5 @@
-import { CommandoClient } from "discord.js-commando";
 import { Guild } from "discord.js";
+import { CommandoClient } from "discord.js-commando";
 import { GuildRaidService } from "./raids/GuildRaidService";
 
 export class RtiBotGuild {

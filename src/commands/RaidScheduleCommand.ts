@@ -1,6 +1,8 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
+import { MenuPrompt } from "../base/prompt/PromptHelpers";
+import { Logger } from "../Logger";
 
 export class RaidScheduleCommand extends Command {
     // TODO: permissions

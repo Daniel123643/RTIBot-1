@@ -5,6 +5,7 @@ import { Logger } from "./Logger";
 import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
 import { GuildRaidService } from "./raids/GuildRaidService";
 import { RtiBotGuild } from "./RtiBotGuild";
+import { Collection } from "discord.js";
 
 class App {
     constructor(private config: IConfig) {}

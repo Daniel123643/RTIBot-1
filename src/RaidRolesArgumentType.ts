@@ -6,15 +6,14 @@ import { RaidRole } from "./raids/RaidEvent";
  */
 export class RaidRolesArgumentType extends ArgumentType {
     public parse(val: string, msg: CommandMessage, arg: Argument): RaidRole[] {
-        // format: name:emoji:quant, name:emoji:quant, ...
+        // format: name:quant, name:quant, ...
         const roles = val.split(",");
         return roles.map(role => {
             const fields = role.split(":").map(f => f.trim());
             return {
-                emojiName: fields[1],
                 name: fields[0],
                 participants: [],
-                reqQuantity: Number(fields[2]),
+                reqQuantity: Number(fields[1]),
             };
         });
     }
@@ -24,7 +23,7 @@ export class RaidRolesArgumentType extends ArgumentType {
         let valid = true;
         rolesRaw.map(role => {
             const fields = role.split(":").map(f => f.trim());
-            if (fields.length !== 3 || isNaN(Number(fields[2]))) { valid = false; }
+            if (fields.length !== 2 || isNaN(Number(fields[1]))) { valid = false; }
             return fields;
         });
         return valid;

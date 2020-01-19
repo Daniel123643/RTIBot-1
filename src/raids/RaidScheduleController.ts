@@ -20,7 +20,7 @@ export class RaidScheduleController {
         const eventsString =  events.length === 0 ? "None." : events.map(event => {
                 const startString = event.startDate.format("ddd D MMM HH:mm");
                 const endString = event.endDate.format("HH:mm");
-                return `**${event.name}** @ ${startString}-${endString} | ${event.leader}`;
+                return `**${event.name}** @ ${startString}-${endString} **(${event.totalParticipants}/${event.reqParticipants})**`;
             });
         return new RichEmbed()
             .setTitle("RTI Raid Schedule")

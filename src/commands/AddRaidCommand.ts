@@ -68,15 +68,15 @@ export class AddRaidCommand extends Command {
         const endDate = startDate.clone();
         endDate.add(args.hours, "hours");
 
-        const raidEvent: RaidEvent = {
-            description: args.description,
-            endDate,
-            id: 0,
-            leader: message.author,
-            name: args.name,
-            roles: args.roles,
+        const raidEvent = new RaidEvent(
+            0,
             startDate,
-        };
+            endDate,
+            args.name,
+            args.description,
+            message.author,
+            args.roles,
+        );
 
         RtiBotGuild.get(message.guild).raidService.addRaid(raidEvent);
         message.react("✅");
