@@ -1,5 +1,5 @@
 import { CategoryChannel, Message, Permissions } from "discord.js";
-import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
+import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
 
 export class SetRaidChannelCommand extends Command {
@@ -18,16 +18,14 @@ export class SetRaidChannelCommand extends Command {
             memberName: "raidsetcategory",
             name: "raidsetcategory",
             ownerOnly: true,
-            userPermissions: ["ADMINISTRATOR"],
         });
     }
 
-    public async run(message: CommandoMessage,
+    public async run(message: CommandMessage,
                      args: { category: CategoryChannel }): Promise<Message | Message[]> {
         const permissions = args.category.permissionsFor(this.client.user!);
         if (permissions &&
-            permissions.has(Permissions.FLAGS.MANAGE_CHANNELS, true) &&
-            permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+            permissions.has([Permissions.FLAGS.MANAGE_CHANNELS!, Permissions.FLAGS.MANAGE_MESSAGES!], true)) {
             RtiBotGuild.get(message.guild).raidService.setChannelCategory(args.category);
             message.react("✅");
             return message.delete(5000); // TODO: check permissions

@@ -1,4 +1,4 @@
-import { DMChannel, Message, MessageEmbed, TextChannel } from "discord.js";
+import { DMChannel, GroupDMChannel, Message, RichEmbed, TextChannel } from "discord.js";
 import { Logger } from "../Logger";
 
 /**
@@ -10,7 +10,7 @@ export class PersistentView {
      * @param channel The channel to create the view in
      * @param initialContent The content to place in the view
      */
-    public static async createInChannel(channel: TextChannel | DMChannel ,
+    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel,
                                         initialContent: any): Promise<PersistentView> {
         const msg = await channel.send(initialContent);
         return new PersistentView(msg as Message);
@@ -25,7 +25,7 @@ export class PersistentView {
     /**
      * Set what's displayed in the view
      */
-    public setContent(content: MessageEmbed) {
+    public setContent(content: RichEmbed) {
         if (this.message.editable) {
             content.setTimestamp(new Date());
             this.message.edit(content);

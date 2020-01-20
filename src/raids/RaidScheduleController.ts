@@ -1,4 +1,4 @@
-import { MessageEmbed } from "discord.js";
+import { RichEmbed } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { RaidEvent } from "./RaidEvent";
 
@@ -22,7 +22,7 @@ export class RaidScheduleController {
                 const endString = event.endDate.format("HH:mm");
                 return `**${event.name}** @ ${startString}-${endString} **(${event.totalParticipants}/${event.reqParticipants})**`;
             });
-        return new MessageEmbed()
+        return new RichEmbed()
             .setTitle("RTI Raid Schedule")
             .setDescription("Some usage information...")
             .setThumbnail("https://s3.amazonaws.com/files.enjin.com/1178746/modules/header/uploads/714415555a178b619fef91.02845354.jpeg")

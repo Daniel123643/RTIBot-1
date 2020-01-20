@@ -1,4 +1,4 @@
-import { DMChannel, Message, MessageEmbed, TextChannel, User } from "discord.js";
+import { DMChannel, GroupDMChannel, Message, RichEmbed, TextChannel, User } from "discord.js";
 import moment = require("moment");
 import { PersistentView } from "../base/PersistentView";
 import { MenuPrompt } from "../base/prompt/PromptHelpers";
@@ -14,7 +14,7 @@ export class RaidEventController {
         return new RaidEventController(new PersistentView(message), data);
     }
 
-    public static async createInChannel(channel: TextChannel | DMChannel,
+    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel,
                                         data: RaidEvent): Promise<RaidEventController> {
         return new RaidEventController(await PersistentView.createInChannel(channel, "Placeholder."), data);
     }
@@ -52,10 +52,10 @@ export class RaidEventController {
         this.view.setContent(this.generateContent());
     }
 
-    private generateContent(): MessageEmbed {
+    private generateContent(): RichEmbed {
         const startString = this.data.startDate.format("ddd D MMM HH:mm");
         const endString = this.data.endDate.format("HH:mm");
-        const content = new MessageEmbed()
+        const content = new RichEmbed()
             .setTitle(`${this.data.name} @ ${startString}-${endString}`)
             .setDescription(this.data.description + "\n**Leader:** " + this.data.leader)
             .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg")
@@ -69,7 +69,7 @@ export class RaidEventController {
         return content;
     }
 
-    private async registerParticipant(user: User, errorChannel: TextChannel | DMChannel) {
+    private async registerParticipant(user: User, errorChannel: TextChannel | DMChannel | GroupDMChannel) {
         try {
             const dmc = await user.createDM();
             dmc.send("You are registering for the event \"" + this.data.name + "\"");

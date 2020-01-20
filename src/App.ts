@@ -24,12 +24,12 @@ class App {
             ])
             .registerType(new RaidRolesArgumentType(client, "roles"))
             .registerDefaultGroups()
-            .registerDefaultCommands({ eval: false })
+            .registerDefaultCommands({ eval_: false })
             .registerCommandsIn(path.join(__dirname, "commands"));
 
         client.once("ready", () => {
             if (this.config.activityString) {
-                client.user?.setActivity(this.config.activityString);
+                client.user.setActivity(this.config.activityString);
             }
             RtiBotGuild.loadSavedData(client);
         });

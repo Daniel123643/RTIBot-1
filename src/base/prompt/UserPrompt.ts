@@ -1,4 +1,4 @@
-import { DMChannel, Message, TextChannel, User } from "discord.js";
+import { DMChannel, GroupDMChannel, Message, TextChannel, User } from "discord.js";
 import { Logger } from "../../Logger";
 
 /**
@@ -15,7 +15,7 @@ export abstract class UserPrompt<T> {
      */
     public constructor(private textPrompt: string,
                        private user: User,
-                       private channel: TextChannel | DMChannel) {}
+                       private channel: TextChannel | DMChannel | GroupDMChannel) {}
 
     /**
      * Run the prompt, interacting with the user until the prompt either gives a valid result, or is canceled.

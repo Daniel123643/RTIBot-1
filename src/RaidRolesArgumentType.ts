@@ -1,11 +1,11 @@
-import { Argument, ArgumentType, CommandoMessage } from "discord.js-commando";
+import { Argument, ArgumentType, CommandMessage } from "discord.js-commando";
 import { RaidRole } from "./raids/RaidEvent";
 
 /**
  * A command argument specifying a set of raid roles
  */
 export class RaidRolesArgumentType extends ArgumentType {
-    public parse(val: string, msg: CommandoMessage, arg: Argument): RaidRole[] {
+    public parse(val: string, msg: CommandMessage, arg: Argument): RaidRole[] {
         // format: name:quant, name:quant, ...
         const roles = val.split(",");
         return roles.map(role => {
@@ -18,7 +18,7 @@ export class RaidRolesArgumentType extends ArgumentType {
         });
     }
 
-    public validate(val: string, msg: CommandoMessage, arg: Argument): boolean {
+    public validate(val: string, msg: CommandMessage, arg: Argument): boolean {
         const rolesRaw = val.split(",");
         let valid = true;
         rolesRaw.map(role => {

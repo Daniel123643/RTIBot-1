@@ -6,8 +6,8 @@
   "dependencies": {
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.6",
-    "discord.js": "github:discordjs/discord.js",
-    "discord.js-commando": "github:discordjs/Commando",
+    "discord.js": "^11.5.1",
+    "discord.js-commando": "^0.10.0",
     "mocha": "^6.2.0",
     "moment": "^2.24.0"
   },

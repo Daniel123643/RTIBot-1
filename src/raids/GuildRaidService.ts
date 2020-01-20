@@ -1,8 +1,8 @@
 import { CategoryChannel, Guild, TextChannel } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
+import { SortedArray } from "../base/SortedArray";
 import { Util } from "../Util";
 import { RaidEvent } from "./RaidEvent";
-import { RaidEventArray } from "./RaidEventArray";
 import { RaidEventChannel } from "./RaidEventChannel";
 import { RaidScheduleController } from "./RaidScheduleController";
 
@@ -12,12 +12,13 @@ import { RaidScheduleController } from "./RaidScheduleController";
 export class GuildRaidService {
     private nextEventId = 0;
 
-    private events = new RaidEventArray();
+    private events: SortedArray<RaidEvent>;
     private scheduleControllers: RaidScheduleController[] = [];
 
     private channelCategory: CategoryChannel | undefined;
 
     public constructor(private guild: Guild) {
+        this.events = new SortedArray(this.compareEvents);
     }
 
     /**
@@ -32,7 +33,7 @@ export class GuildRaidService {
         this.events.add(raidEvent);
         this.updateSchedules();
 
-        const channel = await this.guild.channels.create(Util.toTextChannelName(raidEvent.name), {
+        const channel = await this.guild.createChannel(Util.toTextChannelName(raidEvent.name), {
             parent: this.channelCategory,
             position: this.events.indexOf(raidEvent),  // ensures the channel list is sorted
             type: "text",
@@ -62,5 +63,15 @@ export class GuildRaidService {
         this.scheduleControllers.forEach(ctr => {
             ctr.updateView(this.events.data);
         });
+    }
+
+    private compareEvents(ev1: RaidEvent, ev2: RaidEvent): number {
+        if (!ev1.startDate.isSame(ev2.startDate)) {
+            return ev1.startDate.isBefore(ev2.startDate) ? -1 : 1;
+        }
+        if (!ev1.endDate.isSame(ev2.endDate)) {
+            return ev1.endDate.isBefore(ev2.endDate) ? -1 : 1;
+        }
+        return ev1.id < ev2.id ? -1 : 1;
     }
 }

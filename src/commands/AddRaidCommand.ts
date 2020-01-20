@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
+import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import moment = require("moment");
 import { Logger } from "../Logger";
 import { RaidEvent, RaidRole } from "../raids/RaidEvent";
@@ -11,7 +11,6 @@ export class AddRaidCommand extends Command {
             aliases: ["ra"],
             args: [
                 {
-                    error: "Invalid date. It should be on the format DD/MM, but other formats may also work.",
                     key: "date",
                     parse: (date: string) => moment(date, "D/M"),
                     prompt: "Give a date for the raid.",
@@ -49,7 +48,7 @@ export class AddRaidCommand extends Command {
                 },
             ],
             description: "Adds a new raid to the schedule",
-            examples: ["`!raidadd 15/3 20:00 'W4 training' 'Handkiter plays dps on other bosses' 'Chronomancer:🧠:1, DPS:🔥:5, Druid:🐅:2, Banner Warrior:⚔️:1, Handkiter:👋:1'`"],
+            examples: ["`!raidadd 15/3 20:00 'W4 training' 'Handkiter plays dps on other bosses' 'Chronomancer:1, DPS:5, Druid:2, Banner Warrior:1, Handkiter:1'`"],
             group: "raids",
             guildOnly: true,
             memberName: "raidadd",
@@ -57,7 +56,7 @@ export class AddRaidCommand extends Command {
         });
     }
 
-    public async run(message: CommandoMessage,
+    public async run(message: CommandMessage,
                      args: { name: string,
                              description: string,
                              date: moment.Moment,

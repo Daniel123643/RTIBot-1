@@ -1,5 +1,5 @@
-import { Message, MessageEmbed } from "discord.js";
-import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
+import { Message, RichEmbed } from "discord.js";
+import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { duration } from "moment";
 import * as os from "os";
 
@@ -13,14 +13,14 @@ export class StatusCommand extends Command {
         });
     }
 
-    public run(message: CommandoMessage,
+    public run(message: CommandMessage,
                args: string | object | string[],
                fromPattern: boolean): Promise<Message | Message[]> {
         const uptime = os.uptime();
         const load = os.loadavg()[1];  // use 5 min avg
         const rel = os.release();
 
-        const embed = new MessageEmbed()
+        const embed = new RichEmbed()
                 .setColor("#00ff00")
                 .setTitle("Bot Status")
                 .setDescription("Ok!")

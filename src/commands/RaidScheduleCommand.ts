@@ -1,5 +1,5 @@
 import { Message, TextChannel } from "discord.js";
-import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
+import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
 
 export class RaidScheduleCommand extends Command {
@@ -11,13 +11,12 @@ export class RaidScheduleCommand extends Command {
             guildOnly: true,
             memberName: "raidschedule",
             name: "raidschedule",
-            userPermissions: ["ADMINISTRATOR"],
         });
     }
 
-    public run(message: CommandoMessage): Promise<Message | Message[]> {
+    public run(message: CommandMessage): Promise<Message | Message[]> {
         RtiBotGuild.get(message.guild).raidService.addScheduleIn(message.channel as TextChannel);
         message.react("✅");
-        return Promise.resolve(message.delete(5000));
+        return message.delete(5000); // TODO: check permissions
     }
 }
