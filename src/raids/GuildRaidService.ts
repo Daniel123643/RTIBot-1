@@ -4,7 +4,7 @@ import { SortedArray } from "../base/SortedArray";
 import { Util } from "../Util";
 import { RaidEvent } from "./RaidEvent";
 import { RaidEventChannel } from "./RaidEventChannel";
-import { RaidScheduleController } from "./RaidScheduleController";
+import { RaidScheduleView } from "./RaidScheduleView";
 
 /**
  * Provides raid services for a guild
@@ -13,7 +13,7 @@ export class GuildRaidService {
     private nextEventId = 0;
 
     private events: SortedArray<RaidEvent>;
-    private scheduleControllers: RaidScheduleController[] = [];
+    private schedules: RaidScheduleView[] = [];
 
     private channelCategory: CategoryChannel | undefined;
 
@@ -47,7 +47,7 @@ export class GuildRaidService {
      */
     public async addScheduleIn(channel: TextChannel) {
         const view = await PersistentView.createInChannel(channel, "Placeholder.");
-        this.scheduleControllers.push(new RaidScheduleController(view));
+        this.schedules.push(new RaidScheduleView(view));
         this.updateSchedules();
     }
 
@@ -60,8 +60,8 @@ export class GuildRaidService {
     }
 
     private async updateSchedules() {
-        this.scheduleControllers.forEach(ctr => {
-            ctr.updateView(this.events.data);
+        this.schedules.forEach(schedule => {
+            schedule.update(this.events.data);
         });
     }
 

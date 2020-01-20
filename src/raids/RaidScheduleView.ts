@@ -3,16 +3,16 @@ import { PersistentView } from "../base/PersistentView";
 import { RaidEvent } from "./RaidEvent";
 
 /**
- * Controls a persistent raid schedule view, displaying a compact view of a set of events
+ * Displays a persistent raid schedule view, with a compact view of a set of events
  */
-export class RaidScheduleController {
+export class RaidScheduleView {
     public constructor(private view: PersistentView) {}
 
     /**
-     * Sets  the content to display
+     * Sets the content to display
      * @param events A sorted list of raid events to display
      */
-    public updateView(events: RaidEvent[]) {
+    public update(events: RaidEvent[]) {
         this.view.setContent(this.generateContent(events));
     }
 

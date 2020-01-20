@@ -7,16 +7,16 @@ import { Logger } from "../Logger";
 import { RaidEvent, RaidParticipant } from "./RaidEvent";
 
 /**
- * Displays and controls a raid event
+ * Displays a raid event with buttons
  */
-export class RaidEventController {
+export class RaidEventView {
     public static loadFromMessage(message: Message, data: RaidEvent) {
-        return new RaidEventController(new PersistentView(message), data);
+        return new RaidEventView(new PersistentView(message), data);
     }
 
     public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel,
-                                        data: RaidEvent): Promise<RaidEventController> {
-        return new RaidEventController(await PersistentView.createInChannel(channel, "Placeholder."), data);
+                                        data: RaidEvent): Promise<RaidEventView> {
+        return new RaidEventView(await PersistentView.createInChannel(channel, "Placeholder."), data);
     }
 
     private static readonly EMOJI_REGISTER = "✅";
@@ -30,25 +30,25 @@ export class RaidEventController {
     private buttons: ReactionButtonSet;
 
     constructor(private view: PersistentView, private data: RaidEvent) {
-        this.updateView();
-        this.buttons = new ReactionButtonSet(view.message, [RaidEventController.EMOJI_REGISTER,
-                                                            RaidEventController.EMOJI_EDIT,
-                                                            RaidEventController.EMOJI_CANCEL]);
+        this.update();
+        this.buttons = new ReactionButtonSet(view.message, [RaidEventView.EMOJI_REGISTER,
+                                                            RaidEventView.EMOJI_EDIT,
+                                                            RaidEventView.EMOJI_CANCEL]);
         this.buttons.buttonPressed.attach(([user, emoji]) => {
             Logger.Log(Logger.Severity.Debug, "Button " + emoji + " pressed.");
             switch (emoji) {
-                case RaidEventController.EMOJI_REGISTER:
+                case RaidEventView.EMOJI_REGISTER:
                     this.registerParticipant(user, view.message.channel);
                     break;
-                case RaidEventController.EMOJI_EDIT:
+                case RaidEventView.EMOJI_EDIT:
                     break;
-                case RaidEventController.EMOJI_CANCEL:
+                case RaidEventView.EMOJI_CANCEL:
                     break;
             }
         });
     }
 
-    private updateView() {
+    private update() {
         this.view.setContent(this.generateContent());
     }
 
@@ -85,7 +85,7 @@ export class RaidEventController {
                 moment(),
                 "participating",
             ));
-            this.updateView();
+            this.update();
             dmc.send("You have been registered for the event!");
         } catch {
             errorChannel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
