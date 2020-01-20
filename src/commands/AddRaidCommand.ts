@@ -11,6 +11,7 @@ export class AddRaidCommand extends Command {
             aliases: ["ra"],
             args: [
                 {
+                    error: "Invalid date. It should be on the format DD/MM, but other formats may also work.",
                     key: "date",
                     parse: (date: string) => moment(date, "D/M"),
                     prompt: "Give a date for the raid.",
@@ -36,7 +37,7 @@ export class AddRaidCommand extends Command {
                 },
                 {
                     key: "roles",
-                    prompt: "Give the roles for the raid (e.g. 'Chronomancer:🧠:2, Condi DPS:🔥:5, ...').",
+                    prompt: "Give the roles for the raid (e.g. 'Chronomancer:2, Condi DPS:5, ...').",
                     type: "roles",
                 },
                 {

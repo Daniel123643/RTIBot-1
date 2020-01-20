@@ -1,4 +1,4 @@
-import { CategoryChannel, Message } from "discord.js";
+import { CategoryChannel, Message, Permissions } from "discord.js";
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
 
@@ -7,8 +7,8 @@ export class SetRaidChannelCommand extends Command {
         super(client, {
             args: [
                 {
-                    key: "categoryid",
-                    prompt: "Give the id of the category to use.",
+                    key: "category",
+                    prompt: "Give the category to use.",
                     type: "category-channel",
                 },
             ],
@@ -18,13 +18,22 @@ export class SetRaidChannelCommand extends Command {
             memberName: "raidsetcategory",
             name: "raidsetcategory",
             ownerOnly: true,
+            userPermissions: ["ADMINISTRATOR"],
         });
     }
 
     public async run(message: CommandoMessage,
-                     args: { categoryid: CategoryChannel }): Promise<Message | Message[]> {
-        RtiBotGuild.get(message.guild).raidService.setChannelCategory(args.categoryid);
-        message.react("✅");
-        return message.delete(5000); // TODO: check permissions
+                     args: { category: CategoryChannel }): Promise<Message | Message[]> {
+        const permissions = args.category.permissionsFor(this.client.user!);
+        if (permissions &&
+            permissions.has(Permissions.FLAGS.MANAGE_CHANNELS, true) &&
+            permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+            RtiBotGuild.get(message.guild).raidService.setChannelCategory(args.category);
+            message.react("✅");
+            return message.delete(5000); // TODO: check permissions
+        } else {
+            message.react("❌");
+            return message.reply("Command failed, I need the following permissions in that category:\nManage Channels\nManage Messages");
+        }
     }
 }

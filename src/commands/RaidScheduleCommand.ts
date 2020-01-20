@@ -3,7 +3,6 @@ import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
 
 export class RaidScheduleCommand extends Command {
-    // TODO: permissions
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["rs"],
@@ -12,6 +11,7 @@ export class RaidScheduleCommand extends Command {
             guildOnly: true,
             memberName: "raidschedule",
             name: "raidschedule",
+            userPermissions: ["ADMINISTRATOR"],
         });
     }
 
