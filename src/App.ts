@@ -4,6 +4,8 @@ import { IConfig } from "./Config";
 import { Logger } from "./Logger";
 import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
 import { RtiBotGuild } from "./RtiBotGuild";
+import { CategoryChannelArgumentType } from "./base/CategoryChannelArgumentType";
+import { TextChannelArgumentType } from "./base/TextChannelArgumentType";
 
 class App {
     constructor(private config: IConfig) {}
@@ -23,6 +25,8 @@ class App {
                 ["setup", "Setup commands (usually only called once per server)"],
             ])
             .registerType(new RaidRolesArgumentType(client, "roles"))
+            .registerType(new CategoryChannelArgumentType(client))
+            .registerType(new TextChannelArgumentType(client))
             .registerDefaultGroups()
             .registerDefaultCommands({ eval_: false })
             .registerCommandsIn(path.join(__dirname, "commands"));

@@ -31,6 +31,10 @@ export class SortedArray<T> {
         this.items.splice(i, 0, item);
     }
 
+    public remove(item: T) {
+        this.items.splice(this.items.indexOf(item), 1);
+    }
+
     public indexOf(item: T): number | undefined {
         return this.items.indexOf(item);
     }

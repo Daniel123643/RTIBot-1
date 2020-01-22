@@ -1,4 +1,4 @@
-import { CategoryChannel, Guild, TextChannel } from "discord.js";
+import { CategoryChannel, Guild, TextChannel, Collection, DMChannel, GroupDMChannel } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { SortedArray } from "../base/SortedArray";
 import { Util } from "../Util";
@@ -13,6 +13,7 @@ export class GuildRaidService {
     private nextEventId = 0;
 
     private events: SortedArray<RaidEvent>;
+    private eventChannels: Collection<RaidEvent, RaidEventChannel> = new Collection();
     private schedules: RaidScheduleView[] = [];
 
     private channelCategory: CategoryChannel | undefined;
@@ -35,10 +36,18 @@ export class GuildRaidService {
 
         const channel = await this.guild.createChannel(Util.toTextChannelName(raidEvent.name), {
             parent: this.channelCategory,
-            position: this.events.indexOf(raidEvent),  // ensures the channel list is sorted
+            position: this.events.indexOf(raidEvent),  // ensures the channel list is sorted TODO: handle non-raid channels
             type: "text",
         }) as TextChannel;
-        await RaidEventChannel.createInChannel(channel, raidEvent);
+        const raidChannel = await RaidEventChannel.createInChannel(channel, raidEvent);
+        this.eventChannels.set(raidEvent, raidChannel);
+    }
+
+    public async removeRaid(raidEvent: RaidEvent) {
+        this.eventChannels.get(raidEvent)?.channel.delete("Removed by user command");
+        this.eventChannels.delete(raidEvent);
+        this.events.remove(raidEvent);
+        this.updateSchedules();
     }
 
     /**
@@ -57,6 +66,14 @@ export class GuildRaidService {
      */
     public setChannelCategory(category: CategoryChannel) {
         this.channelCategory = category;
+    }
+
+    /**
+     * Gets the RaidEvent belonging to a channel, if there is one (i.e. if the channel is a RaidEventChannel)
+     * @param channel The channel to retrieve the event for
+     */
+    public getRaidEventOf(channel: TextChannel | DMChannel | GroupDMChannel): RaidEvent | undefined {
+        return this.eventChannels.findKey((chnl: RaidEventChannel) => chnl.channel === channel);
     }
 
     private async updateSchedules() {

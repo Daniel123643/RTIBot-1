@@ -23,15 +23,24 @@ export class SetRaidChannelCommand extends Command {
 
     public async run(message: CommandMessage,
                      args: { category: CategoryChannel }): Promise<Message | Message[]> {
+        if (args.category.guild !== message.guild) {
+            return this.onFail(message, "That category is not in this server.");
+        }
+
         const permissions = args.category.permissionsFor(this.client.user!);
         if (permissions &&
             permissions.has([Permissions.FLAGS.MANAGE_CHANNELS!, Permissions.FLAGS.MANAGE_MESSAGES!], true)) {
             RtiBotGuild.get(message.guild).raidService.setChannelCategory(args.category);
+            if (args.category.guild !== message.guild) { return message.delete(); } // TODO:
             message.react("✅");
             return message.delete(5000); // TODO: check permissions
         } else {
-            message.react("❌");
-            return message.reply("Command failed, I need the following permissions in that category:\nManage Channels\nManage Messages");
+            return this.onFail(message, "Command failed, I need the following permissions in that category:\nManage Channels\nManage Messages");
         }
+    }
+
+    public onFail(message: CommandMessage, response: string) {
+        message.react("❌");
+        return message.reply(response);
     }
 }

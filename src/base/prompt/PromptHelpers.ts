@@ -41,3 +41,32 @@ export class MenuPrompt extends UserPrompt<number> {
         return Number(matches!.groups!.i) - 1;
     }
 }
+
+export class YesNoPrompt extends UserPrompt<boolean> {
+    public constructor(textPrompt: string,
+                       user: User,
+                       channel: TextChannel | DMChannel | GroupDMChannel) {
+        const prompt = textPrompt + "\nPlease respond with either `yes` or `no`.";
+        super(prompt, user, channel);
+    }
+
+    protected validate(message: Message): { valid: boolean; msg: string | undefined; } {
+        const content = message.content.toLowerCase();
+        return {
+            msg: "Please respond with either `yes` or `no`.",
+            valid: content.match(/^\s*(yes|no|y|n)\s*$/) !== null,
+        };
+    }
+
+    protected parse(message: Message): boolean {
+        const content = message.content.toLowerCase();
+        if (content.match(/^\s*(yes|y)\s*$/)) {
+            return true;
+        }
+        if (content.match(/^\s*(no|n)\s*$/)) {
+            return false;
+        }
+        return true;
+    }
+
+}
