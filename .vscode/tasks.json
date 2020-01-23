@@ -1,0 +1,64 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "typescript",
+            "label": "tsc-watch",
+            "tsconfig": "tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "group": "build"
+        },
+        {
+            "type": "npm",
+            "script": "tsc",
+            "problemMatcher": []
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build",
+            "platform": "node",
+            "dockerBuild": {
+                "dockerfile": "${workspaceFolder}/Dockerfile",
+                "context": "${workspaceFolder}"
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: release",
+            "dependsOn": [
+                "docker-build",
+                "tsc: build - tsconfig.json"
+            ],
+            "dockerRun": {
+                "env": {
+                    "RTIBOT_CONFIG": "Release"
+                }
+            },
+            "platform": "node"
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build",
+                "tsc: build - tsconfig.json"
+            ],
+            "dockerRun": {
+                "env": {
+                    "RTIBOT_CONFIG": "Debug",
+                    "DEBUG": "*",
+                    "NODE_ENV": "development"
+                }
+            },
+            "platform": "node",
+            "node": {
+                "enableDebugging": true
+            }
+        }
+    ]
+}

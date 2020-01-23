@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  rtibot:
+    image: rtibot
+    build: .
+    environment:
+      NODE_ENV: production

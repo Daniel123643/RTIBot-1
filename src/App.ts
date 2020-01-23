@@ -32,6 +32,7 @@ class App {
             .registerCommandsIn(path.join(__dirname, "commands"));
 
         client.once("ready", () => {
+            Logger.Log(Logger.Severity.Info, "Application started.");
             if (this.config.activityString) {
                 client.user.setActivity(this.config.activityString);
             }
@@ -45,12 +46,14 @@ class App {
 }
 
 function load_configuration(): IConfig | null {
-    if (process.argv.length < 3) {
+    let config: string | undefined = process.argv[2];
+    if (!config) { config = process.env.RTIBOT_CONFIG }
+    if (!config) {
         Logger.Log(Logger.Severity.Error, "No configuration specified.");
         return null;
     }
     let confFile: string;
-    switch (process.argv[2]) {
+    switch (config) {
         case "Release":
             confFile = "../Config.json";
             break;
