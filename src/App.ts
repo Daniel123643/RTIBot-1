@@ -1,4 +1,5 @@
-import { CommandoClient } from "discord.js-commando";
+import { CommandoClient, CommandMessage } from "discord.js-commando";
+import { Sequelize } from "sequelize";
 import * as path from "path";
 import { IConfig } from "./Config";
 import { Logger } from "./Logger";
@@ -6,6 +7,7 @@ import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
 import { RtiBotGuild } from "./RtiBotGuild";
 import { CategoryChannelArgumentType } from "./base/CategoryChannelArgumentType";
 import { TextChannelArgumentType } from "./base/TextChannelArgumentType";
+import { UserDialog } from "./base/prompt/UserDialog";
 
 class App {
     constructor(private config: IConfig) {}
@@ -14,6 +16,7 @@ class App {
         const client = new CommandoClient({
             commandPrefix: this.config.prefix,
             owner: this.config.ownerId,
+            unknownCommandResponse: false,
         });
         client.registry
             .registerDefaultTypes()
@@ -36,12 +39,25 @@ class App {
             if (this.config.activityString) {
                 client.user.setActivity(this.config.activityString);
             }
-            RtiBotGuild.loadSavedData(client);
+            RtiBotGuild.loadSavedData(client, this.loadDatabase());
         });
+
         client.on("error", (error) => {
             Logger.LogError(Logger.Severity.Error, error);
         });
+        client.on("unknownCommand", (msg: CommandMessage) => {
+            if (!UserDialog.hasActiveDialog(msg.author, msg.channel)) {
+                msg.reply(`Unknown command. Use \`${this.config.prefix}help\` to view the list of all commands.`);
+            }
+        });
+
         client.login(this.config.apiKey);
+    }
+
+    private loadDatabase() {
+        return new Sequelize("sqlite::memory", {
+            logging: console.log,
+        });
     }
 }
 

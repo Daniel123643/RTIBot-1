@@ -5,9 +5,10 @@ import { MenuPrompt } from "../base/prompt/PromptHelpers";
 import { ReactionButtonSet } from "../base/ReactionButtonSet";
 import { Logger } from "../Logger";
 import { RaidEvent, RaidParticipant } from "./RaidEvent";
+import { RaidRegistrationDialog } from "./RaidRegistrationDialog";
 
 /**
- * Displays a raid event with buttons
+ * Displays a raid event as an embed message, and allows registering to the event via rection buttons on the message.
  */
 export class RaidEventView {
     public static loadFromMessage(message: Message, data: RaidEvent) {
@@ -23,6 +24,9 @@ export class RaidEventView {
     private static readonly EMOJI_EDIT = "⚙️";
     private static readonly EMOJI_CANCEL = "❌";
 
+    /**
+     * The message displaying the raid event
+     */
     public get message() {
         return this.view.message;
     }
@@ -38,7 +42,7 @@ export class RaidEventView {
             Logger.Log(Logger.Severity.Debug, "Button " + emoji + " pressed.");
             switch (emoji) {
                 case RaidEventView.EMOJI_REGISTER:
-                    this.registerParticipant(user, view.message.channel);
+                    this.registerParticipant(user);
                     break;
                 case RaidEventView.EMOJI_EDIT:
                     break;
@@ -69,26 +73,23 @@ export class RaidEventView {
         return content;
     }
 
-    private async registerParticipant(user: User, errorChannel: TextChannel | DMChannel | GroupDMChannel) {
+    private async registerParticipant(user: User): Promise<void> {
         try {
+            if (this.data.isParticipating(user)) {
+                user.send("You are already registered for this event.");
+                return;
+            }
             const dmc = await user.createDM();
-            dmc.send("You are registering for the event \"" + this.data.name + "\"");
-
-            const roleNames = this.data.roles.map(r => r.name);
-            const roleIndex = await new MenuPrompt("What role do you want to register as?",
-                                                    user,
-                                                    dmc,
-                                                    roleNames).run();
-
-            this.data.roles[roleIndex].participants.push(new RaidParticipant(
-                user,
-                moment(),
-                "participating",
-            ));
-            this.update();
-            dmc.send("You have been registered for the event!");
+            try {
+                const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
+                role.register(user);
+                // TODO: emit event
+                this.update();
+            } catch (_) {
+                Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");
+            }
         } catch {
-            errorChannel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
+            this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
         }
     }
 }

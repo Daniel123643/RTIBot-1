@@ -24,7 +24,7 @@ export abstract class UserPrompt<T> {
         const collector = this.channel.createMessageCollector((m: Message) => m.author === this.user, { time: 30000 });
 
         while (true) {
-            this.channel.send(`${this.user}, ${this.textPrompt}` + "\n" + UserPrompt.CANCEL_STRING);
+            this.say(this.textPrompt + "\n" + UserPrompt.CANCEL_STRING);
             try {
                 const msg = await collector.next;
                 Logger.Log(Logger.Severity.Debug, msg.content);
@@ -37,7 +37,7 @@ export abstract class UserPrompt<T> {
                     collector.stop();
                     return Promise.resolve(this.parse(msg));
                 } else {
-                    if (validation.msg) { this.channel.send(validation.msg); }
+                    if (validation.msg) { this.say(validation.msg); }
                 }
             } catch (e) {
                 break; // probably timed out
@@ -45,9 +45,13 @@ export abstract class UserPrompt<T> {
         }
 
         Logger.Log(Logger.Severity.Debug, "Prompt canceled");
-        this.channel.send(`${this.user}, The command was canceled.`);
+        this.say("The command was canceled.");
         collector.stop();
         return Promise.reject();
+    }
+
+    private say(msg: any): void {
+        this.channel.send((`${this.user}, ${msg}`));
     }
 
     protected abstract validate(message: Message): { valid: boolean, msg: string | undefined };

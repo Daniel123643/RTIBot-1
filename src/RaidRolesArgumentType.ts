@@ -10,11 +10,10 @@ export class RaidRolesArgumentType extends ArgumentType {
         const roles = val.split(",");
         return roles.map(role => {
             const fields = role.split(":").map(f => f.trim());
-            return {
-                name: fields[0],
-                participants: [],
-                reqQuantity: Number(fields[1]),
-            };
+            return new RaidRole(
+                fields[0],
+                Number(fields[1]),
+                []);
         });
     }
 
