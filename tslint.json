@@ -12,7 +12,8 @@
         "semicolon": true,
         "no-namespace": false,
         "arrow-parens": false,
-        "max-classes-per-file": false
+        "max-classes-per-file": false,
+        "ordered-imports": false
     },
     "rulesDirectory": []
 }
