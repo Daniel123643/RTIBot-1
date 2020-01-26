@@ -1,25 +1,26 @@
 import { CategoryChannel, Guild, TextChannel, Collection, DMChannel, GroupDMChannel } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
-import { SortedArray } from "../base/SortedArray";
 import { Util } from "../Util";
+import { SortedEventArray } from "./SortedEventArray";
 import { RaidEvent } from "./RaidEvent";
 import { RaidEventChannel } from "./RaidEventChannel";
 import { RaidScheduleView } from "./RaidScheduleView";
 
 /**
- * Provides raid services for a guild
+ * Provides raid services for a guild,
+ * i.e. creating and removing raids and raid schedules.
  */
 export class GuildRaidService {
     private nextEventId = 0;
 
-    private events: SortedArray<RaidEvent>;
+    private events: SortedEventArray;
     private eventChannels: Collection<RaidEvent, RaidEventChannel> = new Collection();
     private schedules: RaidScheduleView[] = [];
 
     private channelCategory: CategoryChannel | undefined;
 
-    public constructor(private guild: Guild) {
-        this.events = new SortedArray(this.compareEvents);
+    public constructor(private guild: Guild, initialEvents?: RaidEvent[]) {
+        this.events = new SortedEventArray(initialEvents);
     }
 
     /**
@@ -40,9 +41,17 @@ export class GuildRaidService {
             type: "text",
         }) as TextChannel;
         const raidChannel = await RaidEventChannel.createInChannel(channel, raidEvent);
+        raidChannel.view.eventChanged.attach((event: RaidEvent) => {
+            this.events.update(event);
+            this.updateSchedules();
+        });
         this.eventChannels.set(raidEvent, raidChannel);
     }
 
+    /**
+     * Remove an event and any associated channel/view
+     * @param raidEvent The event to remove
+     */
     public async removeRaid(raidEvent: RaidEvent) {
         this.eventChannels.get(raidEvent)?.channel.delete("Removed by user command");
         this.eventChannels.delete(raidEvent);
@@ -80,15 +89,5 @@ export class GuildRaidService {
         this.schedules.forEach(schedule => {
             schedule.update(this.events.data);
         });
-    }
-
-    private compareEvents(ev1: RaidEvent, ev2: RaidEvent): number {
-        if (!ev1.startDate.isSame(ev2.startDate)) {
-            return ev1.startDate.isBefore(ev2.startDate) ? -1 : 1;
-        }
-        if (!ev1.endDate.isSame(ev2.endDate)) {
-            return ev1.endDate.isBefore(ev2.endDate) ? -1 : 1;
-        }
-        return ev1.id < ev2.id ? -1 : 1;
     }
 }

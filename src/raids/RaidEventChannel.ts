@@ -10,11 +10,15 @@ export class RaidEventChannel {
     }
 
     private constructor(private _channel: TextChannel | DMChannel | GroupDMChannel,
-                        private eventController: RaidEventView) {
+                        private eventView: RaidEventView) {
         // TODO: set permissions?
     }
 
     public get channel(): TextChannel | DMChannel | GroupDMChannel {
         return this._channel;
+    }
+
+    public get view(): RaidEventView {
+        return this.eventView;
     }
 }

@@ -6,6 +6,7 @@ import { ReactionButtonSet } from "../base/ReactionButtonSet";
 import { Logger } from "../Logger";
 import { RaidEvent, RaidParticipant } from "./RaidEvent";
 import { RaidRegistrationDialog } from "./RaidRegistrationDialog";
+import { Event } from "../base/Event";
 
 /**
  * Displays a raid event as an embed message, and allows registering to the event via rection buttons on the message.
@@ -30,6 +31,8 @@ export class RaidEventView {
     public get message() {
         return this.view.message;
     }
+
+    public eventChanged: Event<RaidEvent> = new Event();
 
     private buttons: ReactionButtonSet;
 
@@ -83,7 +86,7 @@ export class RaidEventView {
             try {
                 const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
                 role.register(user);
-                // TODO: emit event
+                this.eventChanged.trigger(this.data);
                 this.update();
             } catch (_) {
                 Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");

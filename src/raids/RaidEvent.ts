@@ -1,6 +1,5 @@
-import { GuildMember, User } from "discord.js";
+import { User } from "discord.js";
 import { Moment } from "moment";
-import { Model } from "sequelize/types";
 import moment = require("moment");
 
 /**

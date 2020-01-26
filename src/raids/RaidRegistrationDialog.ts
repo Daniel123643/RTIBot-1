@@ -1,8 +1,7 @@
 import { GroupDMChannel, DMChannel, TextChannel, User } from "discord.js";
-import { RaidParticipant, RaidEvent, RaidRole } from "./RaidEvent";
+import { RaidEvent, RaidRole } from "./RaidEvent";
 import { UserDialog } from "../base/prompt/UserDialog";
 import { MenuPrompt } from "../base/prompt/PromptHelpers";
-import moment = require("moment");
 
 export class RaidRegistrationDialog extends UserDialog<RaidRole> {
     public constructor(user: User,
