@@ -1,16 +1,17 @@
 import { GroupDMChannel, DMChannel, TextChannel, User } from "discord.js";
-import { RaidEvent, RaidRole } from "./RaidEvent";
+import { IRaidEvent } from "./data/RaidEvent";
 import { UserDialog } from "../base/prompt/UserDialog";
 import { MenuPrompt } from "../base/prompt/PromptHelpers";
+import { IRaidRole } from "./data/RaidRole";
 
-export class RaidRegistrationDialog extends UserDialog<RaidRole> {
+export class RaidRegistrationDialog extends UserDialog<IRaidRole> {
     public constructor(user: User,
                        channel: TextChannel | GroupDMChannel | DMChannel,
-                       private event: RaidEvent) {
+                       private event: IRaidEvent) {
         super(user, channel, "registration");
     }
 
-    protected async doExecute(): Promise<RaidRole> {
+    protected async doExecute(): Promise<IRaidRole> {
         this.say("You are registering for the event \"" + this.event.name + "\"");
 
         const roleNames = this.event.roles.map(r => r.name);

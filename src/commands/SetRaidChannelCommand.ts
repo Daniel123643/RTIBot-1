@@ -5,6 +5,7 @@ import { RtiBotGuild } from "../RtiBotGuild";
 export class SetRaidChannelCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
+            aliases: ["rsc"],
             args: [
                 {
                     key: "category",

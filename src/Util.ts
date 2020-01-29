@@ -1,3 +1,5 @@
+import { Snowflake } from "discord.js";
+
 export namespace Util {
     /**
      * Converts a string to a valid text channel name, e.g. "Hello, world!" becomes "hello-world"
@@ -18,5 +20,9 @@ export namespace Util {
         for (const prom of promises) {
             await prom;
         }
+    }
+
+    export function toMention(userId: Snowflake): string {
+        return `<@${userId}>`;
     }
 }

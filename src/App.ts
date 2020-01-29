@@ -1,5 +1,4 @@
 import { CommandoClient, CommandMessage } from "discord.js-commando";
-import { Sequelize } from "sequelize";
 import * as path from "path";
 import { IConfig } from "./Config";
 import { Logger } from "./Logger";
@@ -39,7 +38,7 @@ class App {
             if (this.config.activityString) {
                 client.user.setActivity(this.config.activityString);
             }
-            RtiBotGuild.loadSavedData(client, this.loadDatabase());
+            RtiBotGuild.loadSavedData(client, this.config.dataStoreDirectory);
         });
 
         client.on("error", (error) => {
@@ -53,17 +52,11 @@ class App {
 
         client.login(this.config.apiKey);
     }
-
-    private loadDatabase() {
-        return new Sequelize("sqlite::memory", {
-            logging: console.log,
-        });
-    }
 }
 
 function load_configuration(): IConfig | null {
     let config: string | undefined = process.argv[2];
-    if (!config) { config = process.env.RTIBOT_CONFIG }
+    if (!config) { config = process.env.RTIBOT_CONFIG; }
     if (!config) {
         Logger.Log(Logger.Severity.Error, "No configuration specified.");
         return null;

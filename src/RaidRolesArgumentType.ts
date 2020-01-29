@@ -1,19 +1,20 @@
 import { Argument, ArgumentType, CommandMessage } from "discord.js-commando";
-import { RaidRole } from "./raids/RaidEvent";
+import { IRaidRole } from "./raids/data/RaidRole";
 
 /**
  * A command argument specifying a set of raid roles
  */
 export class RaidRolesArgumentType extends ArgumentType {
-    public parse(val: string, msg: CommandMessage, arg: Argument): RaidRole[] {
+    public parse(val: string, msg: CommandMessage, arg: Argument): IRaidRole[] {
         // format: name:quant, name:quant, ...
         const roles = val.split(",");
         return roles.map(role => {
             const fields = role.split(":").map(f => f.trim());
-            return new RaidRole(
-                fields[0],
-                Number(fields[1]),
-                []);
+            return {
+                name: fields[0],
+                participants: [],
+                reqQuantity: Number(fields[1]),
+            };
         });
     }
 

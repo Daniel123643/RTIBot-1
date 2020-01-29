@@ -4,8 +4,10 @@
   "description": "a discord bot",
   "main": "dist/App.js",
   "dependencies": {
+    "@types/async-lock": "^1.1.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.6",
+    "async-lock": "^1.2.2",
     "discord.js": "^11.5.1",
     "discord.js-commando": "^0.10.0",
     "mocha": "^6.2.0",

@@ -3,4 +3,5 @@ export interface IConfig {
     apiKey: string;
     ownerId: string;
     activityString: string | undefined;
+    dataStoreDirectory: string;
 }

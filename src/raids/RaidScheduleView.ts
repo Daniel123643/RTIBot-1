@@ -1,6 +1,7 @@
 import { RichEmbed } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
-import { RaidEvent } from "./RaidEvent";
+import { IRaidEvent, RaidEvent } from "./data/RaidEvent";
+import { unix } from "moment";
 
 /**
  * Displays a persistent raid schedule view, with a compact view of a set of events
@@ -12,15 +13,15 @@ export class RaidScheduleView {
      * Sets the content to display
      * @param events A sorted list of raid events to display
      */
-    public update(events: RaidEvent[]) {
+    public update(events: IRaidEvent[]) {
         this.view.setContent(this.generateContent(events));
     }
 
-    private generateContent(events: RaidEvent[]) {
+    private generateContent(events: IRaidEvent[]) {
         const eventsString =  events.length === 0 ? "None." : events.map(event => {
-                const startString = event.startDate.format("ddd D MMM HH:mm");
-                const endString = event.endDate.format("HH:mm");
-                return `**${event.name}** @ ${startString}-${endString} **(${event.totalParticipants}/${event.reqParticipants})**`;
+                const startString = unix(event.startDate).format("ddd D MMM HH:mm");
+                const endString = unix(event.endDate).format("HH:mm");
+                return `**${event.name}** @ ${startString}-${endString} **(${RaidEvent.totalParticipants(event)}/${RaidEvent.reqParticipants(event)})**`;
             });
         return new RichEmbed()
             .setTitle("RTI Raid Schedule")

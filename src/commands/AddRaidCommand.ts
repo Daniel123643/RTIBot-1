@@ -2,8 +2,9 @@ import { Message } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import moment = require("moment");
 import { Logger } from "../Logger";
-import { RaidEvent, RaidRole } from "../raids/RaidEvent";
+import { IRaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
+import { IRaidRole } from "../raids/data/RaidRole";
 
 export class AddRaidCommand extends Command {
     constructor(client: CommandoClient) {
@@ -61,7 +62,7 @@ export class AddRaidCommand extends Command {
                              description: string,
                              date: moment.Moment,
                              starttime: moment.Moment,
-                             roles: RaidRole[],
+                             roles: IRaidRole[],
                              hours: number }): Promise<Message | Message[]> {
         const startDate = args.date;
         startDate.hours(args.starttime.hours());
@@ -69,15 +70,15 @@ export class AddRaidCommand extends Command {
         const endDate = startDate.clone();
         endDate.add(args.hours, "hours");
 
-        const raidEvent = new RaidEvent(
-            0,
-            startDate,
-            endDate,
-            args.name,
-            args.description,
-            message.author,
-            args.roles,
-        );
+        const raidEvent: IRaidEvent = {
+            description: args.description,
+            endDate: endDate.unix(),
+            id: 0,
+            leaderId: message.author.id,
+            name: args.name,
+            roles: args.roles,
+            startDate: startDate.unix(),
+        };
 
         try {
             await RtiBotGuild.get(message.guild).raidService.addRaid(raidEvent);

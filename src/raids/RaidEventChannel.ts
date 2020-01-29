@@ -1,9 +1,9 @@
 import { DMChannel, GroupDMChannel, TextChannel } from "discord.js";
-import { RaidEvent } from "./RaidEvent";
+import { IRaidEvent } from "./data/RaidEvent";
 import { RaidEventView } from "./RaidEventView";
 
 export class RaidEventChannel {
-    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel, event: RaidEvent) {
+    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel, event: IRaidEvent) {
         const controller = await RaidEventView.createInChannel(channel, event);
         controller.message.pin();
         return new RaidEventChannel(channel, controller);

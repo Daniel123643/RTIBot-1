@@ -2,9 +2,10 @@ import { CategoryChannel, Guild, TextChannel, Collection, DMChannel, GroupDMChan
 import { PersistentView } from "../base/PersistentView";
 import { Util } from "../Util";
 import { SortedEventArray } from "./SortedEventArray";
-import { RaidEvent } from "./RaidEvent";
+import { IRaidEvent } from "./data/RaidEvent";
 import { RaidEventChannel } from "./RaidEventChannel";
 import { RaidScheduleView } from "./RaidScheduleView";
+import { RaidEventStore } from "./RaidEventStore";
 
 /**
  * Provides raid services for a guild,
@@ -14,12 +15,12 @@ export class GuildRaidService {
     private nextEventId = 0;
 
     private events: SortedEventArray;
-    private eventChannels: Collection<RaidEvent, RaidEventChannel> = new Collection();
+    private eventChannels: Collection<IRaidEvent, RaidEventChannel> = new Collection();
     private schedules: RaidScheduleView[] = [];
 
     private channelCategory: CategoryChannel | undefined;
 
-    public constructor(private guild: Guild, initialEvents?: RaidEvent[]) {
+    public constructor(private guild: Guild, private eventsStore: RaidEventStore, initialEvents?: IRaidEvent[]) {
         this.events = new SortedEventArray(initialEvents);
     }
 
@@ -27,12 +28,13 @@ export class GuildRaidService {
      * Adds a new raid event in this guild, creating a channel for it
      * @param raidEvent The event to add
      */
-    public async addRaid(raidEvent: RaidEvent) {
+    public async addRaid(raidEvent: IRaidEvent) {
         if (!this.channelCategory) {
             throw new Error("No channel category has been set for raids in this server.");
         }
         raidEvent.id = this.nextEventId++;
         this.events.add(raidEvent);
+        this.eventsStore.saveEvents(this.events.data, this.guild);
         this.updateSchedules();
 
         const channel = await this.guild.createChannel(Util.toTextChannelName(raidEvent.name), {
@@ -41,8 +43,9 @@ export class GuildRaidService {
             type: "text",
         }) as TextChannel;
         const raidChannel = await RaidEventChannel.createInChannel(channel, raidEvent);
-        raidChannel.view.eventChanged.attach((event: RaidEvent) => {
+        raidChannel.view.eventChanged.attach((event: IRaidEvent) => {
             this.events.update(event);
+            this.eventsStore.saveEvents(this.events.data, this.guild);
             this.updateSchedules();
         });
         this.eventChannels.set(raidEvent, raidChannel);
@@ -52,10 +55,12 @@ export class GuildRaidService {
      * Remove an event and any associated channel/view
      * @param raidEvent The event to remove
      */
-    public async removeRaid(raidEvent: RaidEvent) {
+    public async removeRaid(raidEvent: IRaidEvent) {
         this.eventChannels.get(raidEvent)?.channel.delete("Removed by user command");
         this.eventChannels.delete(raidEvent);
         this.events.remove(raidEvent);
+        this.eventsStore.saveEvents(this.events.data, this.guild);
+        this.eventsStore.saveDeletedEvent(raidEvent, this.guild);
         this.updateSchedules();
     }
 
@@ -78,10 +83,10 @@ export class GuildRaidService {
     }
 
     /**
-     * Gets the RaidEvent belonging to a channel, if there is one (i.e. if the channel is a RaidEventChannel)
+     * Gets the IRaidEvent belonging to a channel, if there is one (i.e. if the channel is a IRaidEventChannel)
      * @param channel The channel to retrieve the event for
      */
-    public getRaidEventOf(channel: TextChannel | DMChannel | GroupDMChannel): RaidEvent | undefined {
+    public getRaidEventOf(channel: TextChannel | DMChannel | GroupDMChannel): IRaidEvent | undefined {
         return this.eventChannels.findKey((chnl: RaidEventChannel) => chnl.channel === channel);
     }
 

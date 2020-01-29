@@ -1,7 +1,7 @@
 import { TextChannel, GroupDMChannel, DMChannel, User, MessageCollector, Message, Collection, Snowflake } from "discord.js";
 
 // internal
-type DialogData = { groupId?: string, result: Promise<any> }
+type DialogData = { groupId?: string, result: Promise<any> };
 
 /**
  * Interacts with the user, and then returns some value.
@@ -43,7 +43,7 @@ export abstract class UserDialog<T> {
         const onFinish = (val: T) => {
             UserDialog.activeDialogs.delete(this.user.id + this.channel.id);
             return val;
-        }
+        };
         return prm.then(onFinish, onFinish);
     }
 
