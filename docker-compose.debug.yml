@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.7'
 
 services:
   rtibot:
@@ -6,6 +6,14 @@ services:
     build: .
     environment:
       NODE_ENV: development
+      RTIBOT_CONFIG: Debug
     ports:
       - 9229:9229
     command: node --inspect=0.0.0.0:9229 dist/App.js
+    volumes:
+      - type: volume
+        source: debugdata
+        target: /usr/src/app/data
+
+volumes: 
+  debugdata:

@@ -3,5 +3,5 @@
     "apiKey": "",
     "ownerId": "128974046086955009",
     "activityString": "Nodejs",
-    "dataStoreDirectory": "."
+    "dataStoreDirectory": "./data"
 }

@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.7'
 
 services:
   rtibot:
@@ -6,3 +6,10 @@ services:
     build: .
     environment:
       NODE_ENV: production
+    volumes:
+      - type: volume
+        source: proddata
+        target: /data
+
+volumes:
+  proddata:

@@ -38,7 +38,7 @@ class App {
             if (this.config.activityString) {
                 client.user.setActivity(this.config.activityString);
             }
-            RtiBotGuild.loadSavedData(client, this.config.dataStoreDirectory);
+            RtiBotGuild.instantiateAll(client, this.config.dataStoreDirectory);
         });
 
         client.on("error", (error) => {

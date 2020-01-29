@@ -31,7 +31,7 @@ export class RemoveRaidCommand extends Command {
         let event: IRaidEvent;
 
         if (!args.raid_channel) {
-            const ev = raidService.getRaidEventOf(message.channel);
+            const ev = raidService.getRaidEventOf(message.channel as TextChannel);
             if (!ev) {
                 return this.onFail(message, "Please either run this command in a raid channel, or provide the channel of the raid you wish to remove.");
             }
@@ -50,7 +50,7 @@ export class RemoveRaidCommand extends Command {
         try {
             const prompt = `You are about to remove the raid '${event.name}'. Are you sure?`;
             if (await new YesNoPrompt(prompt, message.author, message.channel).run()) {
-                await raidService.removeRaid(event);
+                raidService.removeRaid(event);
                 message.react("✅");
                 return message.delete(5000); // TODO: check permissions
             } else {

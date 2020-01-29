@@ -28,18 +28,18 @@ export class RaidEventView {
     private static readonly EMOJI_EDIT = "⚙️";
     private static readonly EMOJI_CANCEL = "❌";
 
-    /**
-     * The message displaying the raid event
-     */
+
+    public get data(): IRaidEvent {
+        return this._data;
+    }
     public get message() {
         return this.view.message;
     }
 
-    public eventChanged: Event<IRaidEvent> = new Event();
-
+    public eventChanged: Event<void> = new Event();
     private buttons: ReactionButtonSet;
 
-    constructor(private view: PersistentView, private data: IRaidEvent) {
+    constructor(private view: PersistentView, private _data: IRaidEvent) {
         this.update();
         this.buttons = new ReactionButtonSet(view.message, [RaidEventView.EMOJI_REGISTER,
                                                             RaidEventView.EMOJI_EDIT,
@@ -59,10 +59,6 @@ export class RaidEventView {
     }
 
     private update() {
-        this.view.setContent(this.generateContent());
-    }
-
-    private generateContent(): RichEmbed {
         const startString = moment.unix(this.data.startDate).format("ddd D MMM HH:mm");
         const endString = moment.unix(this.data.endDate).format("HH:mm");
         const content = new RichEmbed()
@@ -76,7 +72,7 @@ export class RaidEventView {
             const title = `**${role.name}** (${role.participants.length}/${role.reqQuantity})`;
             content.addField(title, names, true);
         });
-        return content;
+        this.view.setContent(content);
     }
 
     private async registerParticipant(user: User): Promise<void> {
@@ -89,7 +85,7 @@ export class RaidEventView {
             try {
                 const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
                 RaidRole.register(role, user);
-                this.eventChanged.trigger(this.data);
+                this.eventChanged.trigger();
                 this.update();
             } catch (_) {
                 Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");

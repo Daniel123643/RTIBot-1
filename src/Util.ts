@@ -22,6 +22,16 @@ export namespace Util {
         }
     }
 
+    /**
+     * Resolves all promises, even if one fails.
+     */
+    export async function allSettled<T>(promises: Array<Promise<T>>): Promise<Array<{ successful: boolean, value?: T, error?: any }>> {
+        return Promise.all(promises.map(prm => {
+            return prm.then(v => ({ successful: true, value: v }),
+                            error => ({ successful: false, error }));
+        }));
+    }
+
     export function toMention(userId: Snowflake): string {
         return `<@${userId}>`;
     }

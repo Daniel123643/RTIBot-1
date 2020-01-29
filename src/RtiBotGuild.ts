@@ -2,9 +2,11 @@ import { Guild } from "discord.js";
 import { CommandoClient } from "discord.js-commando";
 import { GuildRaidService } from "./raids/GuildRaidService";
 import { PathLike } from "fs";
-import { RaidEventStore } from "./raids/RaidEventStore";
-import { IRaidEvent } from "./raids/data/RaidEvent";
+import { RaidChannelStore } from "./raids/RaidChannelStore";
 
+/**
+ * A statically available set of services instanced for each guild.
+ */
 export class RtiBotGuild {
     public static get(guild: Guild): RtiBotGuild {
         if (!this.instances[guild.id]) {
@@ -14,29 +16,28 @@ export class RtiBotGuild {
     }
 
     /**
-     * Loads saved guild data (events, comps etc.) for all guilds and instantiates services for them
+     * Instantiates services for all guilds the bot is in.
      * @param client The client
+     * @param dataStorePath The path where guild services should store and load data
      */
-    public static loadSavedData(client: CommandoClient, dataStorePath: PathLike) {
-        this.raidEventStore = new RaidEventStore(dataStorePath);
+    public static instantiateAll(client: CommandoClient, dataStorePath: PathLike) {
+        this.raidChannelStore = new RaidChannelStore(dataStorePath);
         client.guilds.forEach(guild => {
-            this.raidEventStore.loadEvents(guild).then(events => {
-                this.instances[guild.id] = new RtiBotGuild(guild, events);
-            }, _ => {
-                this.instances[guild.id] = new RtiBotGuild(guild);
-            });
+            this.instances[guild.id] = new RtiBotGuild(guild);
         });
     }
 
     private static instances: { [id: string]: RtiBotGuild } = {};
-    private static raidEventStore: RaidEventStore;
+    private static raidChannelStore: RaidChannelStore; //  TODO: change so we don't have to keep this reference
 
     private _raidService: GuildRaidService;
-    get raidService(): GuildRaidService {
+    public get raidService(): GuildRaidService {
         return this._raidService;
     }
 
-    private constructor(guild: Guild, initialEvents?: IRaidEvent[]) {
-        this._raidService = new GuildRaidService(guild, RtiBotGuild.raidEventStore, initialEvents);
+    private constructor(guild: Guild) {
+        GuildRaidService.loadFrom(guild, RtiBotGuild.raidChannelStore).then(service => {
+            this._raidService = service;
+        });
     }
 }
