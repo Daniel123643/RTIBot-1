@@ -20,7 +20,7 @@ export class RaidScheduleView {
                 const event = channel.event;
                 const startString = unix(event.startDate).format("ddd D MMM HH:mm");
                 const endString = unix(event.endDate).format("HH:mm");
-                return `**${event.name}** @ ${startString}-${endString} **(${RaidEvent.totalParticipants(event)}/${RaidEvent.reqParticipants(event)})**`;
+                return `**${event.name}** @ ${startString}-${endString} **(${RaidEvent.totalParticipants(event)}/${RaidEvent.reqParticipants(event)})** | ${channel.channel}`;
             });
         const content = new RichEmbed()
                         .setTitle("RTI Raid Schedule")

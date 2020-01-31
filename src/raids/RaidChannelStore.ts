@@ -33,6 +33,7 @@ export class RaidChannelStore extends JsonDataStore {
             if (!res.successful) { Logger.Log(Logger.Severity.Warn, "Unable to load saved event: " + res.error); }
             return res.successful;
         });
+        Logger.Log(Logger.Severity.Info, `Loaded ${results.length} raid channels for ${guild.name}.`);
         return results.map(res => res.value!);
     }
 

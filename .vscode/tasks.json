@@ -37,7 +37,8 @@
             "dockerRun": {
                 "env": {
                     "RTIBOT_CONFIG": "Release"
-                }
+                },
+                "volumes": [{"containerPath": "/data", "localPath": "rtibot_proddata"}]
             },
             "platform": "node"
         },
@@ -53,7 +54,8 @@
                     "RTIBOT_CONFIG": "Debug",
                     "DEBUG": "*",
                     "NODE_ENV": "development"
-                }
+                },
+                "volumes": [{"containerPath": "/usr/src/app/data", "localPath": "rtibot_debugdata"}]
             },
             "platform": "node",
             "node": {

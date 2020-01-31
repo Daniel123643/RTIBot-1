@@ -20,9 +20,9 @@ export class RaidEventChannel {
         const messageId = obj["message"] as Snowflake;
 
         const channel = guild.channels.get(channelId) as TextChannel;
-        if (!channel) { throw new Error("Channel not found for " + event.toString()); }
+        if (!channel) { throw new Error("Channel not found for " + event.name); }
         const message = await channel.fetchMessage(messageId);
-        if (!message) { throw new Error("Message not found for " + event.toString()); }
+        if (!message) { throw new Error("Message not found for " + event.name); }
         const view = RaidEventView.loadFromMessage(message, event);
         return new RaidEventChannel(channel, view);
     }
