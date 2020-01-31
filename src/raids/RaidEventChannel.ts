@@ -2,6 +2,7 @@ import { DMChannel, GroupDMChannel, TextChannel, Snowflake, Client, Guild } from
 import { IRaidEvent } from "./data/RaidEvent";
 import { RaidEventView } from "./RaidEventView";
 import { Event } from "../base/Event";
+import { PersistentView } from "../base/PersistentView";
 
 /**
  * A text channel dedicated to and event.
@@ -9,9 +10,9 @@ import { Event } from "../base/Event";
  */
 export class RaidEventChannel {
     public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel, event: IRaidEvent) {
-        const controller = await RaidEventView.createInChannel(channel, event);
-        controller.message.pin();
-        return new RaidEventChannel(channel, controller);
+        const view = new RaidEventView(await PersistentView.createInChannel(channel, "Placeholder."), event);
+        view.message.pin();
+        return new RaidEventChannel(channel, view);
     }
 
     public static async fromObj(guild: Guild, obj: object): Promise<RaidEventChannel> {
@@ -23,7 +24,7 @@ export class RaidEventChannel {
         if (!channel) { throw new Error("Channel not found for " + event.name); }
         const message = await channel.fetchMessage(messageId);
         if (!message) { throw new Error("Message not found for " + event.name); }
-        const view = RaidEventView.loadFromMessage(message, event);
+        const view = new RaidEventView(new PersistentView(message), event);
         return new RaidEventChannel(channel, view);
     }
 

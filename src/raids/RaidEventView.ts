@@ -1,7 +1,6 @@
 import { DMChannel, GroupDMChannel, Message, RichEmbed, TextChannel, User } from "discord.js";
 import moment = require("moment");
 import { PersistentView } from "../base/PersistentView";
-import { MenuPrompt } from "../base/prompt/PromptHelpers";
 import { ReactionButtonSet } from "../base/ReactionButtonSet";
 import { Logger } from "../Logger";
 import { IRaidEvent, RaidEvent } from "./data/RaidEvent";
@@ -15,19 +14,9 @@ import { RaidRole } from "./data/RaidRole";
  * Displays a raid event as an embed message, and allows registering to the event via rection buttons on the message.
  */
 export class RaidEventView {
-    public static loadFromMessage(message: Message, data: IRaidEvent) {
-        return new RaidEventView(new PersistentView(message), data);
-    }
-
-    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel,
-                                        data: IRaidEvent): Promise<RaidEventView> {
-        return new RaidEventView(await PersistentView.createInChannel(channel, "Placeholder."), data);
-    }
-
     private static readonly EMOJI_REGISTER = "✅";
     private static readonly EMOJI_EDIT = "⚙️";
     private static readonly EMOJI_CANCEL = "❌";
-
 
     public get data(): IRaidEvent {
         return this._data;
@@ -70,7 +59,7 @@ export class RaidEventView {
             let names = role.participants.map(p => RaidParticipant.render(p)).join("\n");
             if (!names) { names = "..."; }
             const title = `**${role.name}** (${role.participants.length}/${role.reqQuantity})`;
-            content.addField(title, names, true);
+            content.addField(title, names, false);
         });
         this.view.setContent(content);
     }
@@ -87,7 +76,7 @@ export class RaidEventView {
                 RaidRole.register(role, user);
                 this.eventChanged.trigger();
                 this.update();
-            } catch (_) {
+            } catch (err) {
                 Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");
             }
         } catch {
