@@ -13,11 +13,7 @@ export interface IRaidRole {
 }
 
 export namespace RaidRole {
-    export function register(role: IRaidRole, user: User) {
-        role.participants.push({
-            registeredAt: moment().unix(),
-            status: "participating",
-            userId: user.id,
-        });
+    export function getNumActiveParticipants(role: IRaidRole) {
+        return role.participants.filter(p => p.status !== "removed").length;
     }
 }

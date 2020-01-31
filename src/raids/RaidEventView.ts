@@ -1,4 +1,4 @@
-import { DMChannel, GroupDMChannel, Message, RichEmbed, TextChannel, User } from "discord.js";
+import { RichEmbed, User } from "discord.js";
 import moment = require("moment");
 import { PersistentView } from "../base/PersistentView";
 import { ReactionButtonSet } from "../base/ReactionButtonSet";
@@ -9,6 +9,7 @@ import { Event } from "../base/Event";
 import { Util } from "../Util";
 import { RaidParticipant } from "./data/RaidParticipant";
 import { RaidRole } from "./data/RaidRole";
+import { YesNoPrompt } from "../base/prompt/PromptHelpers";
 
 /**
  * Displays a raid event as an embed message, and allows registering to the event via rection buttons on the message.
@@ -42,6 +43,7 @@ export class RaidEventView {
                 case RaidEventView.EMOJI_EDIT:
                     break;
                 case RaidEventView.EMOJI_CANCEL:
+                    this.deregisterParticipant(user);
                     break;
             }
         });
@@ -58,7 +60,7 @@ export class RaidEventView {
         this.data.roles.forEach(role => {
             let names = role.participants.map(p => RaidParticipant.render(p)).join("\n");
             if (!names) { names = "..."; }
-            const title = `**${role.name}** (${role.participants.length}/${role.reqQuantity})`;
+            const title = `**${role.name}** (${RaidRole.getNumActiveParticipants(role)}/${role.reqQuantity})`;
             content.addField(title, names, false);
         });
         this.view.setContent(content);
@@ -66,14 +68,15 @@ export class RaidEventView {
 
     private async registerParticipant(user: User): Promise<void> {
         try {
-            if (RaidEvent.isParticipating(this.data, user)) {
-                user.send("You are already registered for this event.");
+            const status = RaidEvent.getParticipationStatus(this.data, user);
+            if (status === "participating" || status === "reserve") {
+                await user.send("You are already registered for this event.");
                 return;
             }
             const dmc = await user.createDM();
             try {
                 const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
-                RaidRole.register(role, user);
+                RaidEvent.register(this.data, user, role);
                 this.eventChanged.trigger();
                 this.update();
             } catch (err) {
@@ -81,6 +84,30 @@ export class RaidEventView {
             }
         } catch {
             this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
+        }
+    }
+
+    private async deregisterParticipant(user: User): Promise<void> {
+        try {
+            const status = RaidEvent.getParticipationStatus(this.data, user);
+            if (!status || status === "removed") {
+                user.send("You are not registered for this event.");
+                return;
+            }
+            const dmc = await user.createDM();
+            try {
+                const cont = await new YesNoPrompt("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
+                if (cont) {
+                    RaidEvent.deregister(this.data, user);
+                    this.eventChanged.trigger();
+                    this.update();
+                    await dmc.send("You have been deregistered from the event.");
+                }
+            } catch (err) {
+                Logger.Log(Logger.Severity.Debug, "A deregistration command was canceled.");
+            }
+        } catch {
+            this.view.message.channel.send(`${user}, Unable to send you a DM for deregistering from the raid. You probably have DMs disabled.`);
         }
     }
 }
