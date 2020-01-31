@@ -57,33 +57,35 @@ export class RaidEventView {
             .setDescription(this.data.description + "\n**Leader:** " + Util.toMention(this.data.leaderId))
             .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg")
             .setFooter("To register, react with the role you want to play.");
+
         this.data.roles.forEach(role => {
-            let names = role.participants.map(p => RaidParticipant.render(p)).join("\n");
-            if (!names) { names = "..."; }
             const title = `**${role.name}** (${RaidRole.getNumActiveParticipants(role)}/${role.reqQuantity})`;
-            content.addField(title, names, false);
+
+            const participants = RaidRole.getSortedParticipants(role);
+            const names = participants.map(p => RaidParticipant.render(p));
+            if (names.length > role.reqQuantity) { names.splice(role.reqQuantity, 0, "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"); }
+            const nameStr = names.length > 0 ? names.join("\n") : "…";
+            content.addField(title, nameStr, false);
         });
         this.view.setContent(content);
     }
 
     private async registerParticipant(user: User): Promise<void> {
         try {
-            const status = RaidEvent.getParticipationStatus(this.data, user);
-            if (status === "participating" || status === "reserve") {
+            if (RaidEvent.getParticipationStatus(this.data, user) === "participating") {
                 await user.send("You are already registered for this event.");
                 return;
             }
             const dmc = await user.createDM();
-            try {
-                const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
-                RaidEvent.register(this.data, user, role);
-                this.eventChanged.trigger();
-                this.update();
-            } catch (err) {
-                Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");
+            const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
+            RaidEvent.register(this.data, user, role);
+            this.eventChanged.trigger();
+            this.update();
+        } catch (err) {
+            if (err) {
+                this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
             }
-        } catch {
-            this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
+            Logger.Log(Logger.Severity.Debug, "A deregistration command was canceled.");
         }
     }
 
@@ -95,19 +97,18 @@ export class RaidEventView {
                 return;
             }
             const dmc = await user.createDM();
-            try {
-                const cont = await new YesNoPrompt("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
-                if (cont) {
-                    RaidEvent.deregister(this.data, user);
-                    this.eventChanged.trigger();
-                    this.update();
-                    await dmc.send("You have been deregistered from the event.");
-                }
-            } catch (err) {
-                Logger.Log(Logger.Severity.Debug, "A deregistration command was canceled.");
+            const cont = await new YesNoPrompt("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
+            if (cont) {
+                RaidEvent.deregister(this.data, user);
+                this.eventChanged.trigger();
+                this.update();
+                await dmc.send("You have been deregistered from the event.");
             }
-        } catch {
-            this.view.message.channel.send(`${user}, Unable to send you a DM for deregistering from the raid. You probably have DMs disabled.`);
+        } catch (err) {
+            if (err) {
+                this.view.message.channel.send(`${user}, Unable to send you a DM for deregistering from the raid. You probably have DMs disabled.`);
+            }
+            Logger.Log(Logger.Severity.Debug, "A deregistration command was canceled.");
         }
     }
 }

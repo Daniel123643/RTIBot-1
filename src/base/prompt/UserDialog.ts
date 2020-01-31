@@ -47,8 +47,8 @@ export abstract class UserDialog<T> {
         return prm.then(onFinish, onFinish);
     }
 
-    protected say(msg: any): void {
-        this.channel.send((`${this.user}, ${msg}`));
+    protected say(msg: any): Promise<Message | Message[]> {
+        return this.channel.send((`${this.user}, ${msg}`));
     }
 
     protected abstract async doExecute(): Promise<T>;

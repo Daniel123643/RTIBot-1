@@ -7,7 +7,7 @@ import { Util } from "../../Util";
 export interface IRaidParticipant {
     userId: Snowflake;
     registeredAt: number;
-    status: "participating" | "reserve" | "removed";
+    status: "participating" | "removed";
 }
 
 export namespace RaidParticipant {

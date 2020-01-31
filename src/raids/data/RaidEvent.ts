@@ -23,7 +23,7 @@ export namespace RaidEvent {
     export function totalParticipants(event: IRaidEvent): number {
         return event.roles.map(r => RaidRole.getNumActiveParticipants(r)).reduce((q, acc) => q + acc, 0);
     }
-    export function getParticipationStatus(event: IRaidEvent, user: User): "participating" | "reserve" | "removed" | undefined {
+    export function getParticipationStatus(event: IRaidEvent, user: User): "participating" | "removed" | undefined {
         return event.roles.flatMap((role: IRaidRole) => role.participants)
                           .find((part: IRaidParticipant) => part.userId === user.id)
                           ?.status;

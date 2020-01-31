@@ -12,7 +12,7 @@ export class RaidRegistrationDialog extends UserDialog<IRaidRole> {
     }
 
     protected async doExecute(): Promise<IRaidRole> {
-        this.say("You are registering for the event \"" + this.event.name + "\"");
+        await this.say("You are registering for the event \"" + this.event.name + "\"");
 
         const roleNames = this.event.roles.map(r => r.name);
         const roleIndex = await new MenuPrompt("What role do you want to register as?",
@@ -20,7 +20,7 @@ export class RaidRegistrationDialog extends UserDialog<IRaidRole> {
                                                 this.channel,
                                                 roleNames).run();
 
-        this.say("You have been registered for the event!");
+        await this.say("You have been registered for the event!");
         const selectedRole = this.event.roles[roleIndex];
         return selectedRole;
     }
