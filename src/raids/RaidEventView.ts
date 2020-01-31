@@ -9,7 +9,7 @@ import { Event } from "../base/Event";
 import { Util } from "../Util";
 import { RaidParticipant } from "./data/RaidParticipant";
 import { RaidRole } from "./data/RaidRole";
-import { YesNoPrompt } from "../base/prompt/PromptHelpers";
+import { YesNoDialog } from "../base/prompt/YesNoDialog";
 
 /**
  * Displays a raid event as an embed message, and allows registering to the event via rection buttons on the message.
@@ -97,7 +97,7 @@ export class RaidEventView {
                 return;
             }
             const dmc = await user.createDM();
-            const cont = await new YesNoPrompt("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
+            const cont = await new YesNoDialog("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
             if (cont) {
                 RaidEvent.deregister(this.data, user);
                 this.eventChanged.trigger();

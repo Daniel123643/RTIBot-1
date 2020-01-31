@@ -3,7 +3,7 @@ import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { Logger } from "../Logger";
 import { IRaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
-import { YesNoPrompt } from "../base/prompt/PromptHelpers";
+import { YesNoDialog } from "../base/prompt/YesNoDialog";
 
 export class RemoveRaidCommand extends Command {
     constructor(client: CommandoClient) {
@@ -49,7 +49,7 @@ export class RemoveRaidCommand extends Command {
 
         try {
             const prompt = `You are about to remove the raid '${event.name}'. Are you sure?`;
-            if (await new YesNoPrompt(prompt, message.author, message.channel).run()) {
+            if (await new YesNoDialog(prompt, message.author, message.channel).run()) {
                 raidService.removeRaid(event);
                 message.react("✅");
                 return message.delete(5000); // TODO: check permissions

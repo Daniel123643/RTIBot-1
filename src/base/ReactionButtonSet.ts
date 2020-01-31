@@ -1,6 +1,5 @@
 import { Message, MessageReaction, ReactionCollector, User } from "discord.js";
 import { Event } from "./Event";
-import { UserPrompt } from "./prompt/UserPrompt";
 
 /**
  * Uses a set of reactions as buttons on a message,

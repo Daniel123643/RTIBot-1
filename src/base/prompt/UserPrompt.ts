@@ -2,7 +2,7 @@ import { DMChannel, GroupDMChannel, Message, TextChannel, User } from "discord.j
 import { Logger } from "../../Logger";
 
 /**
- * Interactively prompts the user for some data.
+ * Interactively prompts the user for some data as part of a dialog
  */
 export abstract class UserPrompt<T> {
     private static readonly CANCEL_STRING = "Respond with cancel to `cancel` the command. The command will automatically be cancelled in 30 seconds.";
