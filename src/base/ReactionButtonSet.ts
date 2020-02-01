@@ -1,5 +1,6 @@
 import { Message, MessageReaction, ReactionCollector, User } from "discord.js";
 import { Event } from "./Event";
+import { Util } from "../Util";
 
 /**
  * Uses a set of reactions as buttons on a message,
@@ -14,9 +15,7 @@ export class ReactionButtonSet {
      * @param emojis The emojis to use
      */
     public constructor(private message: Message, private emojis: string[]) {
-        Promise.all(emojis.map(emoji => {
-            return message.react(emoji);
-        }));
+        Util.resolvePromisesSeq(emojis.map(emoji => (() => message.react(emoji))));
 
         const filter = (reaction: MessageReaction, user: User) => {
             return !user.bot;

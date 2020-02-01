@@ -16,9 +16,9 @@ export namespace Util {
     /**
      * Resolves an array of promises sequentially, so that order is deterministic
      */
-    export async function resolvePromisesSeq<T>(promises: Array<Promise<T>>): Promise<void> {
-        for (const prom of promises) {
-            await prom;
+    export async function resolvePromisesSeq<T>(promiseGenerators: Array<() => Promise<T>>): Promise<void> {
+        for (const promGen of promiseGenerators) {
+            await promGen();
         }
     }
 
