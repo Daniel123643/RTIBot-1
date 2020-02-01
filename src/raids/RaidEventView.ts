@@ -16,7 +16,6 @@ import { YesNoDialog } from "../base/prompt/YesNoDialog";
  */
 export class RaidEventView {
     private static readonly EMOJI_REGISTER = "✅";
-    private static readonly EMOJI_EDIT = "⚙️";
     private static readonly EMOJI_CANCEL = "❌";
 
     public get data(): IRaidEvent {
@@ -32,15 +31,12 @@ export class RaidEventView {
     constructor(private view: PersistentView, private _data: IRaidEvent) {
         this.update();
         this.buttons = new ReactionButtonSet(view.message, [RaidEventView.EMOJI_REGISTER,
-                                                            RaidEventView.EMOJI_EDIT,
                                                             RaidEventView.EMOJI_CANCEL]);
         this.buttons.buttonPressed.attach(([user, emoji]) => {
             Logger.Log(Logger.Severity.Debug, "Button " + emoji + " pressed.");
             switch (emoji) {
                 case RaidEventView.EMOJI_REGISTER:
                     this.registerParticipant(user);
-                    break;
-                case RaidEventView.EMOJI_EDIT:
                     break;
                 case RaidEventView.EMOJI_CANCEL:
                     this.deregisterParticipant(user);
