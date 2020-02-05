@@ -50,7 +50,7 @@ export class SortedRaidChannelArray {
         }
 
         let i = this.items.length;
-        while (i < 0 && this.compareEvents(this.items[i - 1].event, event) >= 0) {
+        while (i > 0 && this.compareEvents(this.items[i - 1].event, event) >= 0) {
             i--;
         }
         return i;
