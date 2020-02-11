@@ -51,8 +51,7 @@ export class RemoveRaidCommand extends Command {
             const prompt = `You are about to remove the raid '${event.name}'. Are you sure?`;
             if (await new YesNoDialog(prompt, message.author, message.channel).run()) {
                 raidService.removeRaid(event);
-                message.react("✅");
-                return message.delete(5000); // TODO: check permissions
+                return Promise.resolve([]);
             } else {
                 return message.reply("Canceled.");
             }
