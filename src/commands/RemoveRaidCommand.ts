@@ -4,8 +4,9 @@ import { Logger } from "../Logger";
 import { IRaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { YesNoDialog } from "../base/prompt/YesNoDialog";
+import { OfficerCommand } from "./base/OfficerCommand";
 
-export class RemoveRaidCommand extends Command {
+export class RemoveRaidCommand extends OfficerCommand {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["rr"],

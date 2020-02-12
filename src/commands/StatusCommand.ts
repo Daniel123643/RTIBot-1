@@ -2,6 +2,7 @@ import { Message, RichEmbed } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { duration } from "moment";
 import * as os from "os";
+import { RtiBotGuild } from "../RtiBotGuild";
 
 export class StatusCommand extends Command {
     constructor(client: CommandoClient) {

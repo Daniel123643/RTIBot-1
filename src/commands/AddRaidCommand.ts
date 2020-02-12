@@ -5,8 +5,9 @@ import { Logger } from "../Logger";
 import { IRaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { IRaidRole } from "../raids/data/RaidRole";
+import { OfficerCommand } from "./base/OfficerCommand";
 
-export class AddRaidCommand extends Command {
+export class AddRaidCommand extends OfficerCommand {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["ra"],

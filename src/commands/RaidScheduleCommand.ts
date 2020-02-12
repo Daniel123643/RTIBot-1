@@ -1,8 +1,9 @@
 import { Message, TextChannel } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
+import { AdminCommand } from "./base/AdminCommand";
 
-export class RaidScheduleCommand extends Command {
+export class RaidScheduleCommand extends AdminCommand {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["rs"],

@@ -1,9 +1,10 @@
-import { Guild } from "discord.js";
+import { Guild, GuildMember } from "discord.js";
 import { CommandoClient } from "discord.js-commando";
 import { GuildRaidService } from "./raids/GuildRaidService";
 import { PathLike } from "fs";
 import * as path from "path";
 import { JsonDataStore } from "./base/data_store/JsonDataStore";
+import { Logger } from "./Logger";
 
 /**
  * A statically available set of services instanced for each guild.
@@ -36,10 +37,34 @@ export class RtiBotGuild {
         return this._raidService;
     }
 
-    private constructor(guild: Guild) {
+    private constructor(private guild: Guild) {
         const dataStore = new JsonDataStore(path.join(RtiBotGuild.rootDataPath, guild.id));
         GuildRaidService.loadFrom(guild, dataStore).then(service => {
             this._raidService = service;
         });
+    }
+
+    /**
+     * Whether or not a member of the guild can run admin commands
+     */
+    public hasAdminPrivileges(member: GuildMember): boolean {
+        if (member.guild.id !== this.guild.id) {
+            Logger.Log(Logger.Severity.Warn, "Checking privileges of member not in guild.");
+            return false;
+        }
+        // TODO: make this dynamic/changeable
+        return member.roles.some(role => role.name.toLowerCase() === "admin");
+    }
+
+    /**
+     * Whether or not a member of the guild can run commands requiring intermediate level (such as managing raid events)
+     */
+    public hasOfficerPrivileges(member: GuildMember): boolean {
+        if (member.guild.id !== this.guild.id) {
+            Logger.Log(Logger.Severity.Warn, "Checking privileges of member not in guild.");
+            return false;
+        }
+        // TODO: make this dynamic/changeable
+        return this.hasAdminPrivileges(member) || member.roles.some(role => role.name.toLowerCase() === "officer");
     }
 }

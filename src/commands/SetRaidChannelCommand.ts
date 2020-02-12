@@ -1,8 +1,9 @@
 import { CategoryChannel, Message, Permissions } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
+import { AdminCommand } from "./base/AdminCommand";
 
-export class SetRaidChannelCommand extends Command {
+export class SetRaidChannelCommand extends AdminCommand {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["rsc"],
@@ -18,7 +19,6 @@ export class SetRaidChannelCommand extends Command {
             guildOnly: true,
             memberName: "raidsetcategory",
             name: "raidsetcategory",
-            ownerOnly: true,
         });
     }
 

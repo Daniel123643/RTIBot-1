@@ -1,4 +1,4 @@
-import { CategoryChannel, Guild, TextChannel, Snowflake } from "discord.js";
+import { CategoryChannel, Guild, TextChannel, Snowflake, GuildMember } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { Util } from "../Util";
 import { SortedRaidChannelArray } from "./SortedRaidChannelArray";
