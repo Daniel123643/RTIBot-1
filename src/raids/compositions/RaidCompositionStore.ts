@@ -23,7 +23,7 @@ export class RaidCompositionStore {
      */
     public async loadCompositions(): Promise<IRaidComposition[]> {
         const results: IRaidComposition[] = await this.dataStore.read(RaidCompositionStore.RECORD_NAME);
-        Logger.Log(Logger.Severity.Info, `Loaded ${results.length} raid channels for ${this.guild.name}.`);
+        Logger.Log(Logger.Severity.Info, `Loaded ${results.length} compositions for ${this.guild.name}.`);
         return results;
     }
 
