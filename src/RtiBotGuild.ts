@@ -1,10 +1,11 @@
 import { Guild, GuildMember } from "discord.js";
 import { CommandoClient } from "discord.js-commando";
-import { GuildRaidService } from "./raids/GuildRaidService";
+import { RaidEventService } from "./raids/RaidEventService";
 import { PathLike } from "fs";
 import * as path from "path";
 import { JsonDataStore } from "./base/data_store/JsonDataStore";
 import { Logger } from "./Logger";
+import { RaidCompositionService } from "./raids/compositions/RaidCompositionService";
 
 /**
  * A statically available set of services instanced for each guild.
@@ -32,15 +33,23 @@ export class RtiBotGuild {
     private static instances: { [id: string]: RtiBotGuild } = {};
     private static rootDataPath: string;
 
-    private _raidService: GuildRaidService;
-    public get raidService(): GuildRaidService {
-        return this._raidService;
+    private _eventService: RaidEventService;
+    public get raidEventService(): RaidEventService {
+        return this._eventService;
+    }
+
+    private _compositionService: RaidCompositionService;
+    public get raidCompositionService(): RaidCompositionService {
+        return this._compositionService;
     }
 
     private constructor(private guild: Guild) {
         const dataStore = new JsonDataStore(path.join(RtiBotGuild.rootDataPath, guild.id));
-        GuildRaidService.loadFrom(guild, dataStore).then(service => {
-            this._raidService = service;
+        RaidEventService.loadFrom(guild, dataStore).then(service => {
+            this._eventService = service;
+        });
+        RaidCompositionService.loadFrom(guild, dataStore).then(service => {
+            this._compositionService = service;
         });
     }
 
