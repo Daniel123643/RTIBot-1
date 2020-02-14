@@ -13,11 +13,11 @@ import { IDataStore } from "../base/data_store/DataStore";
  * Provides raid services for a guild.
  * Controls raid event channels (which contain raid event data) and schedules (which list upcoming events)
  */
-export class GuildRaidService {
+export class RaidEventService {
     /**
      * Creates a new instance, trying to load saved state from the provided store
      */
-    public static async loadFrom(guild: Guild, dataStore: IDataStore): Promise<GuildRaidService> {
+    public static async loadFrom(guild: Guild, dataStore: IDataStore): Promise<RaidEventService> {
         const channelStore = new RaidChannelStore(dataStore, guild);
         let channels: RaidEventChannel[] | undefined;
         try {
@@ -32,7 +32,7 @@ export class GuildRaidService {
         try {
             raidChannelCategory = guild.channels.get(await dataStore.read(this.CATEGORY_RECORD_NAME) as Snowflake) as CategoryChannel;
         } catch { }
-        return new GuildRaidService(guild, channelStore, scheduleViewStore, dataStore, channels, scheduleViews, raidChannelCategory);
+        return new RaidEventService(guild, channelStore, scheduleViewStore, dataStore, channels, scheduleViews, raidChannelCategory);
     }
 
     private static readonly CATEGORY_RECORD_NAME = "category";
@@ -133,7 +133,7 @@ export class GuildRaidService {
      */
     public setChannelCategory(category: CategoryChannel) {
         this.channelCategory = category;
-        this.genericStore.write(GuildRaidService.CATEGORY_RECORD_NAME, category.id);
+        this.genericStore.write(RaidEventService.CATEGORY_RECORD_NAME, category.id);
     }
 
     /**

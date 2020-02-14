@@ -3,7 +3,7 @@ import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { AdminCommand } from "./base/AdminCommand";
 
-export class SetRaidChannelCommand extends AdminCommand {
+export class SetEventCategoryCommand extends AdminCommand {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["rsc"],
@@ -31,10 +31,10 @@ export class SetRaidChannelCommand extends AdminCommand {
         const permissions = args.category.permissionsFor(this.client.user!);
         if (permissions &&
             permissions.has([Permissions.FLAGS.MANAGE_CHANNELS!, Permissions.FLAGS.MANAGE_MESSAGES!], true)) {
-            RtiBotGuild.get(message.guild).raidService.setChannelCategory(args.category);
+            RtiBotGuild.get(message.guild).raidEventService.setChannelCategory(args.category);
             if (args.category.guild !== message.guild) { return message.delete(); } // TODO:
             message.react("✅");
-            return message.delete(5000); // TODO: check permissions
+            return Promise.resolve([]);
         } else {
             return this.onFail(message, "Command failed, I need the following permissions in that category:\nManage Channels\nManage Messages");
         }

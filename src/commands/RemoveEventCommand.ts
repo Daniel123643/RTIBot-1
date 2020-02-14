@@ -6,7 +6,7 @@ import { RtiBotGuild } from "../RtiBotGuild";
 import { YesNoDialog } from "../base/prompt/YesNoDialog";
 import { OfficerCommand } from "./base/OfficerCommand";
 
-export class RemoveRaidCommand extends OfficerCommand {
+export class RemoveEventCommand extends OfficerCommand {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["rr"],
@@ -28,7 +28,7 @@ export class RemoveRaidCommand extends OfficerCommand {
 
     public async run(message: CommandMessage,
                      args: { raid_channel: TextChannel }): Promise<Message | Message[]> {
-        const raidService = RtiBotGuild.get(message.guild).raidService;
+        const raidService = RtiBotGuild.get(message.guild).raidEventService;
         let event: IRaidEvent;
 
         if (!args.raid_channel) {

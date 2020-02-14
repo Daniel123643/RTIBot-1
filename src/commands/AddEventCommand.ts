@@ -7,7 +7,7 @@ import { RtiBotGuild } from "../RtiBotGuild";
 import { IRaidRole } from "../raids/data/RaidRole";
 import { OfficerCommand } from "./base/OfficerCommand";
 
-export class AddRaidCommand extends OfficerCommand {
+export class AddEventCommand extends OfficerCommand {
     constructor(client: CommandoClient) {
         super(client, {
             aliases: ["ra"],
@@ -82,9 +82,9 @@ export class AddRaidCommand extends OfficerCommand {
         };
 
         try {
-            await RtiBotGuild.get(message.guild).raidService.addRaid(raidEvent);
+            await RtiBotGuild.get(message.guild).raidEventService.addRaid(raidEvent);
             message.react("✅");
-            return message.delete(5000); // TODO: check permissions
+            return Promise.resolve([]);
         } catch (err) {
             Logger.LogError(Logger.Severity.Info, err);
             message.react("❌");
