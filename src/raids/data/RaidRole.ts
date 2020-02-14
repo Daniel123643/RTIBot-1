@@ -1,6 +1,7 @@
 import { IRaidParticipant } from "./RaidParticipant";
 import { User } from "discord.js";
 import moment = require("moment");
+import { IRaidComposition } from "../compositions/RaidComposition";
 
 /**
  * A role in a raid (e.g. healer)
@@ -13,6 +14,16 @@ export interface IRaidRole {
 }
 
 export namespace RaidRole {
+    export function fromRaidComposition(comp: IRaidComposition): IRaidRole[] {
+        return comp.roles.map(role => {
+            return {
+                name: role.name,
+                participants: [],
+                reqQuantity: role.reqParticipants,
+            };
+        });
+    }
+
     export function getNumActiveParticipants(role: IRaidRole) {
         return role.participants.filter(p => p.status !== "removed").length;
     }

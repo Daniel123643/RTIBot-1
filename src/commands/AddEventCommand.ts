@@ -4,7 +4,7 @@ import moment = require("moment");
 import { Logger } from "../Logger";
 import { IRaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
-import { IRaidRole } from "../raids/data/RaidRole";
+import { IRaidRole, RaidRole } from "../raids/data/RaidRole";
 import { OfficerCommand } from "./base/OfficerCommand";
 
 export class AddEventCommand extends OfficerCommand {
@@ -37,9 +37,9 @@ export class AddEventCommand extends OfficerCommand {
                     type: "string",
                 },
                 {
-                    key: "roles",
-                    prompt: "Give the roles for the raid (e.g. 'Chronomancer:2, Condi DPS:5, ...').",
-                    type: "roles",
+                    key: "composition",
+                    prompt: "Give the composition for the raid (you may first need to add one with !compadd",
+                    type: "string",
                 },
                 {
                     default: 2,
@@ -63,13 +63,18 @@ export class AddEventCommand extends OfficerCommand {
                              description: string,
                              date: moment.Moment,
                              starttime: moment.Moment,
-                             roles: IRaidRole[],
+                             composition: string,
                              hours: number }): Promise<Message | Message[]> {
         const startDate = args.date;
         startDate.hours(args.starttime.hours());
         startDate.minutes(args.starttime.minutes());
         const endDate = startDate.clone();
         endDate.add(args.hours, "hours");
+        const composition = RtiBotGuild.get(message.guild).raidCompositionService.getRaidComposition(args.composition);
+
+        if (!composition) {
+            return this.onFail(message, "There is no composition with that name. Please use an existing one, or add a new one with '!compadd'.")
+        }
 
         const raidEvent: IRaidEvent = {
             description: args.description,
@@ -77,7 +82,7 @@ export class AddEventCommand extends OfficerCommand {
             id: 0,
             leaderId: message.author.id,
             name: args.name,
-            roles: args.roles,
+            roles: RaidRole.fromRaidComposition(composition),
             startDate: startDate.unix(),
         };
 
@@ -90,5 +95,10 @@ export class AddEventCommand extends OfficerCommand {
             message.react("❌");
             return message.reply(`The command failed:\n${err}`);
         }
+    }
+
+    public onFail(message: CommandMessage, response: string) {
+        message.react("❌");
+        return message.reply(response);
     }
 }
