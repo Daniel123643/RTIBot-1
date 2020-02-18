@@ -32,7 +32,6 @@
             "label": "docker-run: release",
             "dependsOn": [
                 "docker-build",
-                "tsc: build - tsconfig.json"
             ],
             "dockerRun": {
                 "env": {
@@ -47,7 +46,6 @@
             "label": "docker-run: debug",
             "dependsOn": [
                 "docker-build",
-                "tsc: build - tsconfig.json"
             ],
             "dockerRun": {
                 "env": {
