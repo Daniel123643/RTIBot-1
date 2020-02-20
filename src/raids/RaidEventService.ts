@@ -1,7 +1,7 @@
 import { CategoryChannel, Guild, TextChannel, Snowflake, GuildMember } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { SortedRaidChannelArray } from "./SortedRaidChannelArray";
-import { IRaidEvent } from "./data/RaidEvent";
+import { IRaidEvent, RaidEvent } from "./data/RaidEvent";
 import { RaidEventChannel } from "./RaidEventChannel";
 import { RaidScheduleView } from "./RaidScheduleView";
 import { RaidChannelStore } from "./stores/RaidChannelStore";
@@ -74,9 +74,8 @@ export class RaidEventService {
     /**
      * Adds a new raid event in this guild, creating a channel for it
      * @param raidEvent The event to add
-     * @returns The created event channel
      */
-    public async addRaid(raidEvent: IRaidEvent): Promise<RaidEventChannel> {
+    public async addRaid(raidEvent: IRaidEvent) {
         if (!this.channelCategory) {
             throw new Error("No channel category has been set for raids in this server.");
         }
@@ -106,6 +105,20 @@ export class RaidEventService {
         this.channelStore.saveChannels(this.eventChannels.data);
         this.channelStore.saveDeletedEvent(raidChannel.event);
         this.updateSchedules();
+    }
+
+    /**
+     * Remove all participants from a raid event
+     * @param channel The channel of the event to clear
+     */
+    public clearRaidParticipants(channel: TextChannel) {
+        const raidChannel = this.getRaidChannelOf(channel);
+        if (!raidChannel) {
+            Logger.Log(Logger.Severity.Error, "Trying to clear raid, but channel is not a raid channel: " + channel.name);
+            return;
+        }
+        RaidEvent.clearParticipants(raidChannel.event);
+        raidChannel.eventChanged.trigger();
     }
 
     /**

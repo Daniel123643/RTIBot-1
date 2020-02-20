@@ -44,4 +44,13 @@ export namespace RaidEvent {
                    .filter(p => p.userId === user.id)
                    .forEach(p => p.status = "removed");
     }
+
+    /**
+     * Clear all participants completely
+     */
+    export function clearParticipants(event: IRaidEvent) {
+        event.roles.forEach(role => {
+            role.participants = [];
+        });
+    }
 }

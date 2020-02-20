@@ -25,6 +25,11 @@ export class RaidEventView {
         return this.view.message;
     }
 
+    /**
+     * Triggered when the event held by this view is changed.
+     * This event works two-way, i.e. another class can change this view's event,
+     * and then trigger this event to update the view.
+     */
     public eventChanged: Event<void> = new Event();
     private buttons: ReactionButtonSet;
 
@@ -43,6 +48,7 @@ export class RaidEventView {
                     break;
             }
         });
+        this.eventChanged.attach(this.update.bind(this));
     }
 
     private update() {
@@ -76,7 +82,6 @@ export class RaidEventView {
             const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
             RaidEvent.register(this.data, user, role);
             this.eventChanged.trigger();
-            this.update();
         } catch (err) {
             if (err) {
                 this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
@@ -97,7 +102,6 @@ export class RaidEventView {
             if (cont) {
                 RaidEvent.deregister(this.data, user);
                 this.eventChanged.trigger();
-                this.update();
                 await dmc.send("You have been deregistered from the event.");
             }
         } catch (err) {
