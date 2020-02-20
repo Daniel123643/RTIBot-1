@@ -30,6 +30,7 @@ export class RemoveEventCommand extends OfficerCommand {
                      args: { raid_channel: TextChannel }): Promise<Message | Message[]> {
         const raidService = RtiBotGuild.get(message.guild).raidEventService;
         let event: IRaidEvent;
+        let channel: TextChannel;
 
         if (!args.raid_channel) {
             const ev = raidService.getRaidEventOf(message.channel as TextChannel);
@@ -37,6 +38,7 @@ export class RemoveEventCommand extends OfficerCommand {
                 return this.onFail(message, "Please either run this command in a raid channel, or provide the channel of the raid you wish to remove.");
             }
             event = ev;
+            channel = message.channel as TextChannel;
         } else {
             if (args.raid_channel.guild !== message.guild) {
                 return this.onFail(message, "That channel is not in this server.");
@@ -46,12 +48,13 @@ export class RemoveEventCommand extends OfficerCommand {
                 return this.onFail(message, "The channel you provided is not a raid channel.");
             }
             event = ev;
+            channel = args.raid_channel;
         }
 
         try {
             const prompt = `You are about to remove the raid '${event.name}'. Are you sure?`;
             if (await new YesNoDialog(prompt, message.author, message.channel).run()) {
-                raidService.removeRaid(event);
+                raidService.removeRaid(channel);
                 return Promise.resolve([]);
             } else {
                 return message.reply("Canceled.");

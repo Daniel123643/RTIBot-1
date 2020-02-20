@@ -7,6 +7,7 @@ import { RaidScheduleView } from "./RaidScheduleView";
 import { RaidChannelStore } from "./stores/RaidChannelStore";
 import { RaidScheduleViewStore } from "./stores/RaidScheduleViewStore";
 import { IDataStore } from "../base/data_store/DataStore";
+import { Logger } from "../Logger";
 
 /**
  * Provides raid services for a guild.
@@ -73,8 +74,9 @@ export class RaidEventService {
     /**
      * Adds a new raid event in this guild, creating a channel for it
      * @param raidEvent The event to add
+     * @returns The created event channel
      */
-    public async addRaid(raidEvent: IRaidEvent) {
+    public async addRaid(raidEvent: IRaidEvent): Promise<RaidEventChannel> {
         if (!this.channelCategory) {
             throw new Error("No channel category has been set for raids in this server.");
         }
@@ -86,15 +88,20 @@ export class RaidEventService {
         this.channelStore.saveChannels(this.eventChannels.data);
 
         this.updateSchedules();
+        return raidChannel;
     }
 
     /**
-     * Remove an event and its associated channel/view
-     * @param raidEvent The event to remove
+     * Remove a raid channel and its event
+     * @param channel The channel to remove. Must be a raid channel.
      */
-    public removeRaid(raidEvent: IRaidEvent) {
-        const raidChannel = this.eventChannels.removeByEvent(raidEvent);
-        if (!raidChannel) { return; }
+    public removeRaid(channel: TextChannel) {
+        const raidChannel = this.getRaidChannelOf(channel);
+        if (!raidChannel) {
+            Logger.Log(Logger.Severity.Error, "Trying to remove raid, but channel is not a raid channel: " + channel.name);
+            return;
+        }
+        this.eventChannels.remove(raidChannel);
         raidChannel.channel.delete("Removed by user command");
         this.channelStore.saveChannels(this.eventChannels.data);
         this.channelStore.saveDeletedEvent(raidChannel.event);
@@ -127,7 +134,11 @@ export class RaidEventService {
      * @param channel The channel to retrieve the event for
      */
     public getRaidEventOf(channel: TextChannel): IRaidEvent | undefined {
-        return this.eventChannels.data.find((chnl: RaidEventChannel) => chnl.channel === channel)?.event;
+        return this.getRaidChannelOf(channel)?.event;
+    }
+
+    private getRaidChannelOf(channel: TextChannel): RaidEventChannel | undefined {
+        return this.eventChannels.data.find((chnl: RaidEventChannel) => chnl.channel === channel);
     }
 
     private async updateSchedules() {

@@ -6,7 +6,7 @@ import { PersistentView } from "../base/PersistentView";
 import { Util } from "../Util";
 
 /**
- * A text channel dedicated to and event.
+ * A text channel dedicated to a raid event.
  * Contains an embed at the top with event information.
  */
 export class RaidEventChannel {

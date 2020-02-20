@@ -32,16 +32,16 @@ export class SortedRaidChannelArray {
     }
 
     /**
-     * Removed the raid channel owning a given event from the array
-     * @param event The event for which to remove the channel
-     * @returns The removed raid channel, if any
+     * Removed the given raid channel from the array
+     * @param event The channel to remove
+     * @returns Whether something was removed
      */
-    public removeByEvent(event: IRaidEvent): RaidEventChannel | undefined {
-        const rChan = this.data.find(chan => chan.event === event);
-        if (rChan) {
-            this.items.splice(this.items.indexOf(rChan), 1);
+    public remove(channel: RaidEventChannel): boolean {
+        const index = this.items.indexOf(channel);
+        if (index >= 0) {
+            this.items.splice(index, 1);
         }
-        return rChan;
+        return index >= 0;
     }
 
     public prospectiveIndexOf(event: IRaidEvent): number {
