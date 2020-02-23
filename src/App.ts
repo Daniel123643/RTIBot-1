@@ -9,15 +9,17 @@ import { TextChannelArgumentType } from "./base/TextChannelArgumentType";
 import { UserDialog } from "./base/prompt/UserDialog";
 
 class App {
+    private client: CommandoClient;
+
     constructor(private config: IConfig) {}
 
     public run() {
-        const client = new CommandoClient({
+        this.client = new CommandoClient({
             commandPrefix: this.config.prefix,
             owner: this.config.ownerId,
             unknownCommandResponse: false,
         });
-        client.registry
+        this.client.registry
             .registerDefaultTypes()
             .registerGroups([
                 ["account", "Account linking and management"],
@@ -26,31 +28,36 @@ class App {
                 ["admin", "Bot management"],
                 ["setup", "Setup commands (usually only called once per server)"],
             ])
-            .registerType(new RaidRolesArgumentType(client, "roles"))
-            .registerType(new CategoryChannelArgumentType(client))
-            .registerType(new TextChannelArgumentType(client))
+            .registerType(new RaidRolesArgumentType(this.client, "roles"))
+            .registerType(new CategoryChannelArgumentType(this.client))
+            .registerType(new TextChannelArgumentType(this.client))
             .registerDefaultGroups()
             .registerDefaultCommands({ eval_: false })
             .registerCommandsIn(path.join(__dirname, "commands"));
 
-        client.once("ready", () => {
+        this.client.once("ready", () => {
             Logger.Log(Logger.Severity.Info, "Application started.");
             if (this.config.activityString) {
-                client.user.setActivity(this.config.activityString);
+                this.setStatus();
+                this.client.setInterval(this.setStatus.bind(this), 23 * 60 * 60 * 1000);
             }
-            RtiBotGuild.instantiateAll(client, this.config.dataStoreDirectory);
+            RtiBotGuild.instantiateAll(this.client, this.config.dataStoreDirectory);
         });
 
-        client.on("error", (error) => {
+        this.client.on("error", (error) => {
             Logger.LogError(Logger.Severity.Error, error);
         });
-        client.on("unknownCommand", (msg: CommandMessage) => {
+        this.client.on("unknownCommand", (msg: CommandMessage) => {
             if (!UserDialog.hasActiveDialog(msg.author, msg.channel)) {
                 msg.reply(`Unknown command. Use \`${this.config.prefix}help\` to view the list of all commands.`);
             }
         });
 
-        client.login(this.config.apiKey);
+        this.client.login(this.config.apiKey);
+    }
+
+    private setStatus() {
+        this.client.user.setActivity(this.config.activityString!);
     }
 }
 
