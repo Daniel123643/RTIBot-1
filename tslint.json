@@ -13,7 +13,9 @@
         "no-namespace": false,
         "arrow-parens": false,
         "max-classes-per-file": false,
-        "ordered-imports": false
+        "ordered-imports": false,
+        "no-string-literal": false,
+        "variable-name": false
     },
     "rulesDirectory": []
 }

@@ -1,7 +1,5 @@
-import { Logger } from "../Logger";
-import { IRaidEvent } from "./data/RaidEvent";
+import { RaidEvent } from "./data/RaidEvent";
 import { RaidEventChannel } from "./RaidEventChannel";
-import { TextChannel } from "discord.js";
 
 /**
  * An automatically sorted array of raid channels (sorted by event start date)
@@ -36,7 +34,7 @@ export class SortedRaidChannelArray {
      * @param event The event for which to remove the channel
      * @returns The removed raid channel, if any
      */
-    public removeByEvent(event: IRaidEvent): RaidEventChannel | undefined {
+    public removeByEvent(event: RaidEvent): RaidEventChannel | undefined {
         const rChan = this.data.find(chan => chan.event === event);
         if (rChan) {
             this.items.splice(this.items.indexOf(rChan), 1);
@@ -44,7 +42,7 @@ export class SortedRaidChannelArray {
         return rChan;
     }
 
-    public prospectiveIndexOf(event: IRaidEvent): number {
+    public prospectiveIndexOf(event: RaidEvent): number {
         if (this.items.length === 0) {
             return 0;
         }
@@ -56,13 +54,13 @@ export class SortedRaidChannelArray {
         return i;
     }
 
-    private compareEvents(ev1: IRaidEvent, ev2: IRaidEvent): number {
-        if (ev1.startDate !== ev2.startDate) {
-            return ev1.startDate < ev2.startDate ? -1 : 1;
+    private compareEvents(ev1: RaidEvent, ev2: RaidEvent): number {
+        if (ev1.startTime.isSame(ev2.startTime)) {
+            return ev1.startTime.isBefore(ev2.startTime) ? -1 : 1;
         }
-        if (ev1.endDate !== ev2.endDate) {
-            return ev1.endDate < ev2.endDate ? -1 : 1;
+        if (ev1.endTime.isSame(ev2.endTime)) {
+            return ev1.endTime.isBefore(ev2.endTime) ? -1 : 1;
         }
-        return ev1.id < ev2.id ? -1 : 1;
+        return -1;
     }
 }

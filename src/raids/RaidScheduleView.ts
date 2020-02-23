@@ -1,6 +1,6 @@
 import { RichEmbed, Message, Guild, TextChannel } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
-import { IRaidEvent, RaidEvent } from "./data/RaidEvent";
+import { RaidEvent } from "./data/RaidEvent";
 import { unix } from "moment";
 import { RaidEventChannel } from "./RaidEventChannel";
 
@@ -27,9 +27,9 @@ export class RaidScheduleView {
     public update(channels: RaidEventChannel[]) {
         const eventsString =  channels.length === 0 ? "None." : channels.map(channel => {
                 const event = channel.event;
-                const startString = unix(event.startDate).format("ddd D MMM HH:mm");
-                const endString = unix(event.endDate).format("HH:mm");
-                return `**${event.name}** @ ${startString}-${endString} **(${RaidEvent.totalParticipants(event)}/${RaidEvent.reqParticipants(event)})** | ${channel.channel}`;
+                const startString = event.startTime.format("ddd D MMM HH:mm");
+                const endString = event.endTime.format("HH:mm");
+                return `**${event.name}** @ ${startString}-${endString} **(${event.numRequiredParticipants}/${event.numRequiredParticipants})** | ${channel.channel}`;
             });
         const content = new RichEmbed()
                         .setTitle("RTI Raid Schedule")
@@ -41,7 +41,7 @@ export class RaidScheduleView {
     }
 
     /**
-     * Converts this to a JSON-serializable object reinstantiable via fromObj
+     * Converts this to a JSON-serial>izable object reinstantiable via fromObj
      */
     public toObj(): object {
         return { msg: this.view.message.id, channel: this.view.message.channel.id };

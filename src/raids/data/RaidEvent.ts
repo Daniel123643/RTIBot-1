@@ -1,47 +1,98 @@
 import { User, Snowflake } from "discord.js";
-import { IRaidRole, RaidRole } from "./RaidRole";
-import { IRaidParticipant } from "./RaidParticipant";
+import { RaidRole } from "./RaidRole";
+import { RaidParticipant } from "./RaidParticipant";
 import moment = require("moment");
+import { IRaidComposition } from "../compositions/RaidComposition";
 
 /**
  * A raid schedule event
  */
-export interface IRaidEvent {
-    id: number;
-    startDate: number;
-    endDate: number;
-    name: string;
-    description: string;
-    leaderId: Snowflake;
-    roles: IRaidRole[];
-}
+export class RaidEvent {
+    public static deserialize(obj: object): RaidEvent {
+        const roles = obj["_roles"].map(roleObj => RaidRole.deserialize(roleObj));
+        return new RaidEvent(obj["_startDate"], obj["_endDate"], obj["_name"], obj["_description"], obj["_leaderId"], roles);
+    }
 
-export namespace RaidEvent {
-    export function reqParticipants(event: IRaidEvent): number {
-        return event.roles.map(r => r.reqQuantity).reduce((q, acc) => q + acc, 0);
+    /**
+     * Create a new raid event
+     * @param _startTime Unix timestamp for the start time of the event
+     * @param _endTime Unix timestamp for the end time of the event
+     * @param _name Visible name of the raid
+     * @param _description Visible description of the raid
+     * @param _leaderId Discord id of the leader (creator) of the event
+     * @param _roles All roles required for the event
+     */
+    // TODO: make private
+    constructor(private _startTime: number,
+                private _endTime: number,
+                private _name: string,
+                private _description: string,
+                private _leaderId: Snowflake,
+                private _roles: RaidRole[]) {}
+
+    public get name() {
+        return this._name;
     }
-    export function totalParticipants(event: IRaidEvent): number {
-        return event.roles.map(r => RaidRole.getNumActiveParticipants(r)).reduce((q, acc) => q + acc, 0);
+    public get description() {
+        return this._description;
     }
-    export function getParticipationStatus(event: IRaidEvent, user: User): "participating" | "removed" | undefined {
-        return event.roles.flatMap((role: IRaidRole) => role.participants)
-                          .find((part: IRaidParticipant) => part.userId === user.id)
+    public get leaderId() {
+        return this._leaderId;
+    }
+    public get roles() {
+        return this._roles;
+    }
+
+    public get startTime(): moment.Moment {
+        return moment(this._startTime);
+    }
+    public get endTime(): moment.Moment {
+        return moment(this._endTime);
+    }
+
+    /**
+     * Gets the total number of participants needed for the event.
+     */
+    public get numRequiredParticipants(): number {
+        return this._roles.map(r => r.numRequiredParticipants).reduce((q, acc) => q + acc, 0);
+    }
+
+    /**
+     * Gets the number of active participants registered to this event, e.g. participants
+     * who have not been removed.
+     */
+    public get numActiveParticipants(): number {
+        return this._roles.map(r => r.numActiveParticipants).reduce((q, acc) => q + acc, 0);
+    }
+
+    /**
+     * Checks whether a user is registered to the event, and in that case
+     * returns the status of their registration.
+     */
+    public getParticipationStatusOf(user: User): "participating" | "removed" | undefined {
+        return this._roles.flatMap((role: RaidRole) => role.participantsSorted)
+                          .find((part: RaidParticipant) => part.userId === user.id)
                           ?.status;
     }
-    export function register(event: IRaidEvent, user: User, role: IRaidRole) {
-        event.roles.forEach(r => {
-            const i = r.participants.findIndex(part => part.userId === user.id);
-            if (i > -1) { r.participants.splice(i, 1); }
+
+    /**
+     * Register a user to participate in this event as the given role.
+     * @param user The user to register
+     * @param role The role to register them for
+     */
+    public register(user: User, role: RaidRole) {
+        this._roles.forEach(r => {
+            r.clearRegistration(user);
         });
-        role.participants.push({
-            registeredAt: moment().unix(),
-            status: "participating",
-            userId: user.id,
-        });
+        role.register(user);
     }
-    export function deregister(event: IRaidEvent, user: User) {
-        event.roles.flatMap(r => r.participants)
-                   .filter(p => p.userId === user.id)
-                   .forEach(p => p.status = "removed");
+
+    /**
+     * Remove any registration to this event for a user.
+     */
+    public deregister(user: User) {
+        this._roles.forEach(role => {
+            role.deregister(user);
+        });
     }
 }

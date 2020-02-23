@@ -1,5 +1,5 @@
 import { DMChannel, GroupDMChannel, TextChannel, Snowflake, Client, Guild } from "discord.js";
-import { IRaidEvent } from "./data/RaidEvent";
+import { RaidEvent } from "./data/RaidEvent";
 import { RaidEventView } from "./RaidEventView";
 import { Event } from "../base/Event";
 import { PersistentView } from "../base/PersistentView";
@@ -9,14 +9,14 @@ import { PersistentView } from "../base/PersistentView";
  * Contains an embed at the top with event information.
  */
 export class RaidEventChannel {
-    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel, event: IRaidEvent) {
+    public static async createInChannel(channel: TextChannel | DMChannel | GroupDMChannel, event: RaidEvent) {
         const view = new RaidEventView(await PersistentView.createInChannel(channel, "Placeholder."), event);
         view.message.pin();
         return new RaidEventChannel(channel, view);
     }
 
     public static async fromObj(guild: Guild, obj: object): Promise<RaidEventChannel> {
-        const event = obj["event"] as IRaidEvent;
+        const event = RaidEvent.deserialize(obj["event"]);
         const channelId = obj["channel"] as Snowflake;
         const messageId = obj["message"] as Snowflake;
 
@@ -37,7 +37,7 @@ export class RaidEventChannel {
         return this._channel;
     }
 
-    public get event(): IRaidEvent {
+    public get event(): RaidEvent {
         return this.eventView.data;
     }
 
