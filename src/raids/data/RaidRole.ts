@@ -9,7 +9,7 @@ import { User } from "discord.js";
 export class RaidRole {
     public static deserialize(obj: object): RaidRole {
         const participants = obj["_participants"].map(pObj => RaidParticipant.deserialize(pObj));
-        return new RaidRole(obj["_name"], obj["_reqQuantity"], participants);
+        return new RaidRole(obj["_name"], obj["_requiredParticipants"], participants);
     }
 
     public static fromRaidComposition(comp: IRaidComposition): RaidRole[] {
@@ -63,13 +63,16 @@ export class RaidRole {
     }
 
     /**
-     * Deregisters a user from this role (sets their status to "removed").
+     * Deregisters a user from this role (sets their status to "removed"),
+     * if the user is registered to it.
+     * @returns Whether the user was registered to this role
      */
-    public deregister(user: User) {
+    public unregister(user: User): boolean {
         const participant = this._participants.find(p => p.userId === user.id);
         if (participant) {
             participant.status = "removed";
         }
+        return participant !== undefined;
     }
 
     /**

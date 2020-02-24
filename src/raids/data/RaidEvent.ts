@@ -2,7 +2,7 @@ import { User, Snowflake } from "discord.js";
 import { RaidRole } from "./RaidRole";
 import { RaidParticipant } from "./RaidParticipant";
 import moment = require("moment");
-import { IRaidComposition } from "../compositions/RaidComposition";
+import { RaidEventLog } from "./RaidEventLog";
 
 /**
  * A raid schedule event
@@ -10,9 +10,11 @@ import { IRaidComposition } from "../compositions/RaidComposition";
 export class RaidEvent {
     public static deserialize(obj: object): RaidEvent {
         const roles = obj["_roles"].map(roleObj => RaidRole.deserialize(roleObj));
-        return new RaidEvent(obj["_startDate"], obj["_endDate"], obj["_name"], obj["_description"], obj["_leaderId"], roles);
+        const log = RaidEventLog.deserialize(obj["_log"]);
+        return new RaidEvent(obj["_startTime"], obj["_endTime"], obj["_name"], obj["_description"], obj["_leaderId"], roles, log);
     }
 
+    private _log: RaidEventLog;
     /**
      * Create a new raid event
      * @param _startTime Unix timestamp for the start time of the event
@@ -28,7 +30,13 @@ export class RaidEvent {
                 private _name: string,
                 private _description: string,
                 private _leaderId: Snowflake,
-                private _roles: RaidRole[]) {}
+                private _roles: RaidRole[],
+                private log?: RaidEventLog) {
+        this._log = log ? log : new RaidEventLog();
+        if (!log) { // this is a newly created event, not deserialized
+            this._log.addEntryCreated(this._leaderId);
+        }
+    }
 
     public get name() {
         return this._name;
@@ -44,10 +52,14 @@ export class RaidEvent {
     }
 
     public get startTime(): moment.Moment {
-        return moment(this._startTime);
+        return moment.unix(this._startTime);
     }
     public get endTime(): moment.Moment {
-        return moment(this._endTime);
+        return moment.unix(this._endTime);
+    }
+
+    public get logEntries(): string[] {
+        return this._log.formattedEntries;
     }
 
     /**
@@ -85,14 +97,17 @@ export class RaidEvent {
             r.clearRegistration(user);
         });
         role.register(user);
+        this._log.addEntryRegistered(user.id, role.name);
     }
 
     /**
      * Remove any registration to this event for a user.
      */
-    public deregister(user: User) {
+    public unregister(user: User) {
         this._roles.forEach(role => {
-            role.deregister(user);
+            if (role.unregister(user)) {
+                this._log.addEntryUnregistered(user.id, role.name);
+            }
         });
     }
 }

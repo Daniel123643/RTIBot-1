@@ -92,7 +92,7 @@ export class RaidEventView {
             const dmc = await user.createDM();
             const cont = await new YesNoDialog("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
             if (cont) {
-                this.data.deregister(user);
+                this.data.unregister(user);
                 this.eventChanged.trigger();
                 this.update();
                 await dmc.send("You have been deregistered from the event.");
