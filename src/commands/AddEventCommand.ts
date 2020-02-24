@@ -2,9 +2,9 @@ import { Message } from "discord.js";
 import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
 import moment = require("moment");
 import { Logger } from "../Logger";
-import { IRaidEvent } from "../raids/data/RaidEvent";
+import { RaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
-import { IRaidRole, RaidRole } from "../raids/data/RaidRole";
+import { RaidRole } from "../raids/data/RaidRole";
 import { OfficerCommand } from "./base/OfficerCommand";
 
 export class AddEventCommand extends OfficerCommand {
@@ -73,18 +73,16 @@ export class AddEventCommand extends OfficerCommand {
         const composition = RtiBotGuild.get(message.guild).raidCompositionService.getRaidComposition(args.composition);
 
         if (!composition) {
-            return this.onFail(message, "There is no composition with that name. Please use an existing one, or add a new one with '!compadd'.")
+            return this.onFail(message, "There is no composition with that name. Please use an existing one, or add a new one with '!compadd'.");
         }
 
-        const raidEvent: IRaidEvent = {
-            description: args.description,
-            endDate: endDate.unix(),
-            id: 0,
-            leaderId: message.author.id,
-            name: args.name,
-            roles: RaidRole.fromRaidComposition(composition),
-            startDate: startDate.unix(),
-        };
+        const raidEvent = new RaidEvent(
+            startDate.unix(),
+            endDate.unix(),
+            args.name,
+            args.description,
+            message.author.id,
+            RaidRole.fromRaidComposition(composition));
 
         try {
             await RtiBotGuild.get(message.guild).raidEventService.addRaid(raidEvent);

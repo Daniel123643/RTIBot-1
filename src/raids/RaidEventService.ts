@@ -1,7 +1,7 @@
 import { CategoryChannel, Guild, TextChannel, Snowflake, GuildMember } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { SortedRaidChannelArray } from "./SortedRaidChannelArray";
-import { IRaidEvent, RaidEvent } from "./data/RaidEvent";
+import { RaidEvent } from "./data/RaidEvent";
 import { RaidEventChannel } from "./RaidEventChannel";
 import { RaidScheduleView } from "./RaidScheduleView";
 import { RaidChannelStore } from "./stores/RaidChannelStore";
@@ -36,8 +36,6 @@ export class RaidEventService {
     }
 
     private static readonly CATEGORY_RECORD_NAME = "category";
-
-    private nextEventId = 0;
 
     private eventChannels: SortedRaidChannelArray;
     private schedules: RaidScheduleView[];
@@ -75,11 +73,10 @@ export class RaidEventService {
      * Adds a new raid event in this guild, creating a channel for it
      * @param raidEvent The event to add
      */
-    public async addRaid(raidEvent: IRaidEvent) {
+    public async addRaid(raidEvent: RaidEvent) {
         if (!this.channelCategory) {
             throw new Error("No channel category has been set for raids in this server.");
         }
-        raidEvent.id = this.nextEventId++;
 
         const raidChannel = await RaidEventChannel.createInGuild(this.guild, this.channelCategory, raidEvent);
         raidChannel.eventChanged.attach(this.onEventChanged.bind(this));
@@ -117,7 +114,7 @@ export class RaidEventService {
             Logger.Log(Logger.Severity.Error, "Trying to clear raid, but channel is not a raid channel: " + channel.name);
             return;
         }
-        RaidEvent.clearParticipants(raidChannel.event);
+        raidChannel.event.clearParticipants();
         raidChannel.eventChanged.trigger();
     }
 
@@ -146,7 +143,7 @@ export class RaidEventService {
      * Gets the IRaidEvent belonging to a channel, if there is one (i.e. if the channel is a RaidEventChannel)
      * @param channel The channel to retrieve the event for
      */
-    public getRaidEventOf(channel: TextChannel): IRaidEvent | undefined {
+    public getRaidEventOf(channel: TextChannel): RaidEvent | undefined {
         return this.getRaidChannelOf(channel)?.event;
     }
 

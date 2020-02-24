@@ -2,7 +2,7 @@ import { Message, TextChannel } from "discord.js";
 import { CommandMessage, CommandoClient } from "discord.js-commando";
 import { OfficerCommand } from "./base/OfficerCommand";
 import { RtiBotGuild } from "../RtiBotGuild";
-import { IRaidEvent, RaidEvent } from "../raids/data/RaidEvent";
+import { RaidEvent } from "../raids/data/RaidEvent";
 import { Logger } from "../Logger";
 import { YesNoDialog } from "../base/prompt/YesNoDialog";
 
@@ -29,7 +29,7 @@ export class ClearEventCommand extends OfficerCommand {
     public async run(message: CommandMessage,
                      args: { raid_channel: TextChannel}): Promise<Message | Message[]> {
         const raidService = RtiBotGuild.get(message.guild).raidEventService;
-        let event: IRaidEvent;
+        let event: RaidEvent;
         let channel: TextChannel;
 
         if (!args.raid_channel) {
@@ -51,12 +51,12 @@ export class ClearEventCommand extends OfficerCommand {
             channel = args.raid_channel;
         }
 
-        if (RaidEvent.totalParticipants(event) === 0) {
+        if (event.numActiveParticipants === 0) {
             return this.onFail(message, "The raid is already empty.");
         }
 
         try {
-            const prompt = `You are about to clear ${RaidEvent.totalParticipants(event)} participants from the raid '${event.name}'. Are you sure?`;
+            const prompt = `You are about to clear ${event.numActiveParticipants} participants from the raid '${event.name}'. Are you sure?`;
             if (await new YesNoDialog(prompt, message.author, message.channel).run()) {
                 raidService.clearRaidParticipants(channel);
                 message.react("✅");

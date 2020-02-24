@@ -1,9 +1,9 @@
-import { IRaidEvent } from "../data/RaidEvent";
 import { Guild } from "discord.js";
 import { RaidEventChannel } from "../RaidEventChannel";
 import { Util } from "../../Util";
 import { Logger } from "../../Logger";
 import { IDataStore } from "../../base/data_store/DataStore";
+import { RaidEvent } from "../data/RaidEvent";
 
 /**
  * Stores and loads raid channel & event data on disk
@@ -44,7 +44,7 @@ export class RaidChannelStore {
      * These aren't meant to normally be loaded after being saved.
      * @param event The event to save
      */
-    public async saveDeletedEvent(event: IRaidEvent) {
+    public async saveDeletedEvent(event: RaidEvent) {
         this.dataStore.append("deleted_events", event);
     }
 }

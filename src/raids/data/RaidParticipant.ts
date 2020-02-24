@@ -1,18 +1,35 @@
 import { Snowflake } from "discord.js";
 import { Util } from "../../Util";
+import moment = require("moment");
 
 /**
  * A player participating in a raid event
  */
-export interface IRaidParticipant {
-    userId: Snowflake;
-    registeredAt: number;
-    status: "participating" | "removed";
-}
+export class RaidParticipant {
+    public static deserialize(obj: object): RaidParticipant {
+        return new RaidParticipant(obj["_userId"], obj["_registeredAt"], obj["status"]);
+    }
 
-export namespace RaidParticipant {
-    export function render(participant: IRaidParticipant): string {
-        const mention = Util.toMention(participant.userId);
-        return participant.status === "removed" ? `~~${mention}~~` : mention;
+    constructor(private _userId: Snowflake,
+                private _registeredAt: number,
+                public status: "participating" | "removed") {}
+
+    /**
+     * The discord id of the participant.
+     */
+    public get userId() {
+        return this._userId;
+    }
+
+    /**
+     * The time when the participant was first registered.
+     */
+    public get registeredAt(): moment.Moment {
+        return moment(this._registeredAt);
+    }
+
+    public render(): string {
+        const mention = Util.toMention(this._userId);
+        return this.status === "removed" ? `~~${mention}~~` : mention;
     }
 }

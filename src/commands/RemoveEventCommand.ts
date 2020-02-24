@@ -1,7 +1,7 @@
 import { Message, TextChannel } from "discord.js";
-import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
+import { CommandMessage, CommandoClient } from "discord.js-commando";
 import { Logger } from "../Logger";
-import { IRaidEvent } from "../raids/data/RaidEvent";
+import { RaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { YesNoDialog } from "../base/prompt/YesNoDialog";
 import { OfficerCommand } from "./base/OfficerCommand";
@@ -29,7 +29,7 @@ export class RemoveEventCommand extends OfficerCommand {
     public async run(message: CommandMessage,
                      args: { raid_channel: TextChannel }): Promise<Message | Message[]> {
         const raidService = RtiBotGuild.get(message.guild).raidEventService;
-        let event: IRaidEvent;
+        let event: RaidEvent;
         let channel: TextChannel;
 
         if (!args.raid_channel) {

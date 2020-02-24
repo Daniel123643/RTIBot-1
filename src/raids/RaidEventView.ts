@@ -1,14 +1,11 @@
 import { RichEmbed, User } from "discord.js";
-import moment = require("moment");
 import { PersistentView } from "../base/PersistentView";
 import { ReactionButtonSet } from "../base/ReactionButtonSet";
 import { Logger } from "../Logger";
-import { IRaidEvent, RaidEvent } from "./data/RaidEvent";
+import { RaidEvent } from "./data/RaidEvent";
 import { RaidRegistrationDialog } from "./RaidRegistrationDialog";
 import { Event } from "../base/Event";
 import { Util } from "../Util";
-import { RaidParticipant } from "./data/RaidParticipant";
-import { RaidRole } from "./data/RaidRole";
 import { YesNoDialog } from "../base/prompt/YesNoDialog";
 
 /**
@@ -18,7 +15,7 @@ export class RaidEventView {
     private static readonly EMOJI_REGISTER = "✅";
     private static readonly EMOJI_CANCEL = "❌";
 
-    public get data(): IRaidEvent {
+    public get data(): RaidEvent {
         return this._data;
     }
     public get message() {
@@ -33,7 +30,7 @@ export class RaidEventView {
     public eventChanged: Event<void> = new Event();
     private buttons: ReactionButtonSet;
 
-    constructor(private view: PersistentView, private _data: IRaidEvent) {
+    constructor(private view: PersistentView, private _data: RaidEvent) {
         this.update();
         this.buttons = new ReactionButtonSet(view.message, [RaidEventView.EMOJI_REGISTER,
                                                             RaidEventView.EMOJI_CANCEL]);
@@ -52,20 +49,20 @@ export class RaidEventView {
     }
 
     private update() {
-        const startString = moment.unix(this.data.startDate).format("ddd D MMM HH:mm");
-        const endString = moment.unix(this.data.endDate).format("HH:mm");
+        const startString = this.data.startTime.format("ddd D MMM HH:mm");
+        const endString = this.data.endTime.format("HH:mm");
         const content = new RichEmbed()
             .setTitle(`${this.data.name} @ ${startString}-${endString}`)
             .setDescription(this.data.description + "\n**Leader:** " + Util.toMention(this.data.leaderId))
             .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg")
-            .setFooter("To register, react with the role you want to play.");
+            .setFooter("To register, press the checkmark.");
 
         this.data.roles.forEach(role => {
-            const title = `**${role.name}** (${RaidRole.getNumActiveParticipants(role)}/${role.reqQuantity})`;
+            const title = `**${role.name}** (${role.numActiveParticipants}/${role.numRequiredParticipants})`;
 
-            const participants = RaidRole.getSortedParticipants(role);
-            const names = participants.map(p => RaidParticipant.render(p));
-            if (names.length > role.reqQuantity) { names.splice(role.reqQuantity, 0, "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"); }
+            const participants = role.participantsSorted;
+            const names = participants.map(participant => participant.render());
+            if (names.length > role.numRequiredParticipants) { names.splice(role.numRequiredParticipants, 0, "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"); }
             const nameStr = names.length > 0 ? names.join("\n") : "…";
             content.addField(title, nameStr, false);
         });
@@ -74,13 +71,13 @@ export class RaidEventView {
 
     private async registerParticipant(user: User): Promise<void> {
         try {
-            if (RaidEvent.getParticipationStatus(this.data, user) === "participating") {
+            if (this.data.getParticipationStatusOf(user) === "participating") {
                 await user.send("You are already registered for this event.");
                 return;
             }
             const dmc = await user.createDM();
             const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
-            RaidEvent.register(this.data, user, role);
+            this.data.register(user, role);
             this.eventChanged.trigger();
         } catch (err) {
             if (err) {
@@ -92,7 +89,7 @@ export class RaidEventView {
 
     private async deregisterParticipant(user: User): Promise<void> {
         try {
-            const status = RaidEvent.getParticipationStatus(this.data, user);
+            const status = this.data.getParticipationStatusOf(user);
             if (!status || status === "removed") {
                 user.send("You are not registered for this event.");
                 return;
@@ -100,7 +97,7 @@ export class RaidEventView {
             const dmc = await user.createDM();
             const cont = await new YesNoDialog("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
             if (cont) {
-                RaidEvent.deregister(this.data, user);
+                this.data.unregister(user);
                 this.eventChanged.trigger();
                 await dmc.send("You have been deregistered from the event.");
             }
