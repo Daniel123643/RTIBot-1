@@ -48,7 +48,7 @@ export class RaidEventLog {
         let entryString: string;
         switch (type) {
             case LogEntryType.CREATED:
-                entryString = `Event created by ${Util.toMention(data)}`;
+                entryString = `Raid created by ${Util.toMention(data)}`;
                 break;
             case LogEntryType.CLEARED:
                 entryString = `All registrations cleared by ${Util.toMention(data)}`;

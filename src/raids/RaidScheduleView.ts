@@ -29,13 +29,11 @@ export class RaidScheduleView {
                 const event = channel.event;
                 const startString = event.startTime.format("ddd D MMM HH:mm");
                 const endString = event.endTime.format("HH:mm");
-                return `**${event.name}** @ ${startString}-${endString} **(${event.numRequiredParticipants}/${event.numRequiredParticipants})** | ${channel.channel}`;
+                return `**${event.name}** @ ${startString}-${endString} **(${event.numActiveParticipants}/${event.numRequiredParticipants})** | ${channel.channel}`;
             });
         const content = new RichEmbed()
                         .setTitle("RTI Raid Schedule")
-                        .setDescription("Some usage information...")
                         .setThumbnail("https://s3.amazonaws.com/files.enjin.com/1178746/modules/header/uploads/714415555a178b619fef91.02845354.jpeg")
-                        .setFooter("Some More Information.")
                         .addField("Upcoming events:", eventsString);
         this.view.setContent(content);
     }

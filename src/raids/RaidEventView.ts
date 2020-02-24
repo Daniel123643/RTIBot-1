@@ -49,7 +49,7 @@ export class RaidEventView {
             .setTitle(`${this.data.name} @ ${startString}-${endString}`)
             .setDescription(this.data.description + "\n**Leader:** " + Util.toMention(this.data.leaderId))
             .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg")
-            .setFooter("To register, react with the role you want to play.");
+            .setFooter("To register, press the checkmark.");
 
         this.data.roles.forEach(role => {
             const title = `**${role.name}** (${role.numActiveParticipants}/${role.numRequiredParticipants})`;
