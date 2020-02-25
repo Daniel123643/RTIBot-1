@@ -22,6 +22,7 @@ export class AddCompositionCommand extends OfficerCommand {
                 },
             ],
             description: "Adds a raid composition, which can later be used to create raids",
+            examples: ["!compadd MyDeimosComposition 'Tank:1, Offchrono:1, Banner Slave:1, Hand Kiter:1, Druid:2, Dps:4'"],
             group: "composition",
             guildOnly: true,
             memberName: "compadd",
