@@ -77,8 +77,10 @@ export class RaidEventView {
             }
             const dmc = await user.createDM();
             const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
-            this.data.register(user, role);
-            this.eventChanged.trigger();
+            if (role) {
+                this.data.register(user, role);
+                this.eventChanged.trigger();
+            }
         } catch (err) {
             if (err) {
                 this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
