@@ -86,17 +86,10 @@ export class AddEventCommand extends OfficerCommand {
 
         try {
             await RtiBotGuild.get(message.guild).raidEventService.addRaid(raidEvent);
-            message.react("✅");
-            return Promise.resolve([]);
+            return this.onSuccess(message);
         } catch (err) {
             Logger.LogError(Logger.Severity.Info, err);
-            message.react("❌");
-            return message.reply(`The command failed:\n${err}`);
+            return this.onFail(message, `The command failed:\n${err}`);
         }
-    }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
     }
 }

@@ -29,12 +29,6 @@ export class RemoveEventCommand extends OfficerCommand {
             return this.onFail(message, "There is no composition with that name.");
         }
         compositionService.removeRaidComposition(args.composition);
-        message.react("✅");
-        return Promise.resolve([]);
-    }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
+        return this.onSuccess(message);
     }
 }

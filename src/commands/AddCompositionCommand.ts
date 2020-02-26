@@ -43,12 +43,6 @@ export class AddCompositionCommand extends OfficerCommand {
         };
         compositionService.addRaidComposition(composition);
 
-        message.react("✅");
-        return Promise.resolve([]);
-    }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
+        return this.onSuccess(message);
     }
 }
