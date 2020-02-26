@@ -85,7 +85,7 @@ export class RaidEventView {
             if (err) {
                 this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
             }
-            Logger.Log(Logger.Severity.Debug, "A deregistration command was canceled.");
+            Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");
         }
     }
 
