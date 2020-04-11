@@ -38,7 +38,7 @@ export class AddEventCommand extends OfficerCommand {
                 },
                 {
                     key: "composition",
-                    prompt: "Give the composition for the raid (you may first need to add one with !compadd",
+                    prompt: "Give the composition for the raid (you may first need to add one with &compadd)",
                     type: "string",
                 },
                 {
@@ -50,7 +50,7 @@ export class AddEventCommand extends OfficerCommand {
                 },
             ],
             description: "Adds a new raid to the schedule.",
-            examples: ["`!raidadd 15/3 20:00 'W4 training' 'Handkiter plays dps on other bosses' MyDeimosComposition`"],
+            examples: ["`&raidadd 15/3 20:00 'W4 training' 'Handkiter plays dps on other bosses' MyDeimosComposition`"],
             group: "raids",
             guildOnly: true,
             memberName: "raidadd",
