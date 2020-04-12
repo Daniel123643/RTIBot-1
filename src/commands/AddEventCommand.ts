@@ -1,11 +1,12 @@
 import { Message } from "discord.js";
-import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
+import { CommandMessage, CommandoClient, Argument } from "discord.js-commando";
 import moment = require("moment");
 import { Logger } from "../Logger";
 import { RaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { RaidRole } from "../raids/data/RaidRole";
 import { OfficerCommand } from "./base/OfficerCommand";
+import { RaidRolesParser, ParsedRaidRole } from "../raids/RaidRolesParser";
 
 export class AddEventCommand extends OfficerCommand {
     constructor(client: CommandoClient) {
@@ -38,8 +39,18 @@ export class AddEventCommand extends OfficerCommand {
                 },
                 {
                     key: "composition",
-                    prompt: "Give the composition for the raid (you may first need to add one with &compadd)",
+                    parse: (val: string, msg: CommandMessage, arg: Argument) => {
+                        if (RaidRolesParser.validate(val)) {
+                            return RaidRolesParser.parse(val);
+                        }
+                        return val;
+                    },
+                    prompt: "Give the composition for the raid. You may either specify the name of a saved composition (created with $compadd), or specify a custom one on the same format use by $compadd.",
                     type: "string",
+                    validate: (val: string, msg: CommandMessage, arg: Argument) => {
+                        return RaidRolesParser.validate(val)
+                                || RtiBotGuild.get(msg.guild).raidCompositionService.getRaidComposition(val);
+                    },
                 },
                 {
                     default: 2,
@@ -50,7 +61,8 @@ export class AddEventCommand extends OfficerCommand {
                 },
             ],
             description: "Adds a new raid to the schedule.",
-            examples: ["`&raidadd 15/3 20:00 'W4 training' 'Handkiter plays dps on other bosses' MyDeimosComposition`"],
+            examples: ["`&raidadd 15/3 20:00 'W4 training' 'Handkiter plays dps on other bosses' MyDeimosComposition`",
+                        "`&raidadd 24/12 21 'VG speedrun' 'SnowCrows members only. 3 hour run.' MyVGComposition 3`"],
             group: "raids",
             guildOnly: true,
             memberName: "raidadd",
@@ -63,17 +75,21 @@ export class AddEventCommand extends OfficerCommand {
                              description: string,
                              date: moment.Moment,
                              starttime: moment.Moment,
-                             composition: string,
+                             composition: string | ParsedRaidRole,
                              hours: number }): Promise<Message | Message[]> {
         const startDate = args.date;
         startDate.hours(args.starttime.hours());
         startDate.minutes(args.starttime.minutes());
         const endDate = startDate.clone();
         endDate.add(args.hours, "hours");
-        const composition = RtiBotGuild.get(message.guild).raidCompositionService.getRaidComposition(args.composition);
+        const argComp = args.composition as ParsedRaidRole;
+        const composition = typeof(args.composition) === "string" ?
+                                RtiBotGuild.get(message.guild).raidCompositionService.getRaidComposition(args.composition) :
+                                { name: "Anomymous Composition", roles: argComp };
 
         if (!composition) {
-            return this.onFail(message, "There is no composition with that name. Please use an existing one, or add a new one with '!compadd'.");
+            Logger.Log(Logger.Severity.Error, `Composition invalid for ${args.composition}.`);
+            return this.onFail(message, "An unknown error occured using that raid composition. Try another one.");
         }
 
         const raidEvent = new RaidEvent(
