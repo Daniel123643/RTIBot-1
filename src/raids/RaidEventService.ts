@@ -84,6 +84,7 @@ export class RaidEventService {
         this.channelStore.saveChannels(this.eventChannels.data);
 
         this.updateSchedules();
+        Logger.Log(Logger.Severity.Info, "Created raid " + raidEvent.name);
         return raidChannel;
     }
 
@@ -102,6 +103,7 @@ export class RaidEventService {
         this.channelStore.saveChannels(this.eventChannels.data);
         this.channelStore.saveDeletedEvent(raidChannel.event);
         this.updateSchedules();
+        Logger.Log(Logger.Severity.Info, "Removed raid " + raidChannel.event.name);
     }
 
     /**
@@ -116,6 +118,7 @@ export class RaidEventService {
         }
         raidChannel.event.clearParticipants();
         raidChannel.eventChanged.trigger();
+        Logger.Log(Logger.Severity.Info, "Cleared raid " + raidChannel.event.name);
     }
 
     /**
@@ -144,6 +147,7 @@ export class RaidEventService {
         this.schedules.push(schedule);
         this.scheduleStore.saveScheduleViews(this.schedules);
         this.updateSchedules();
+        Logger.Log(Logger.Severity.Info, "Created schedule in " + channel.name);
     }
 
     /**
@@ -153,6 +157,7 @@ export class RaidEventService {
     public setChannelCategory(category: CategoryChannel) {
         this.channelCategory = category;
         this.genericStore.write(RaidEventService.CATEGORY_RECORD_NAME, category.id);
+        Logger.Log(Logger.Severity.Info, "Set category in " + this.guild.name + " to " + category.name);
     }
 
     /**

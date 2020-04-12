@@ -59,8 +59,7 @@ export class ClearEventCommand extends OfficerCommand {
             const prompt = `You are about to clear ${event.numActiveParticipants} participants from the raid '${event.name}'. Are you sure?`;
             if (await new YesNoDialog(prompt, message.author, message.channel).run()) {
                 raidService.clearRaidParticipants(channel);
-                message.react("✅");
-                return Promise.resolve([]);
+                return this.onSuccess(message);
             } else {
                 return message.reply("Canceled.");
             }
@@ -68,10 +67,5 @@ export class ClearEventCommand extends OfficerCommand {
             Logger.LogError(Logger.Severity.Info, err);
             return this.onFail(message, `The command failed:\n${err}`);
         }
-    }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
     }
 }

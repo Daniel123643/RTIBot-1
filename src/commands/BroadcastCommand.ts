@@ -42,9 +42,4 @@ export class BroadcastCommand extends OfficerCommand {
         message.react("✅");
         return message.delete(5000);
     }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
-    }
 }

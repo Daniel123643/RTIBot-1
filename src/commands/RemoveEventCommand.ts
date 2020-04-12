@@ -57,17 +57,11 @@ export class RemoveEventCommand extends OfficerCommand {
                 raidService.removeRaid(channel);
                 return Promise.resolve([]);
             } else {
-                return message.reply("Canceled.");
+                return this.onFail(message, "Canceled.");
             }
         } catch (err) {
             Logger.LogError(Logger.Severity.Info, err);
-            message.react("❌");
-            return message.reply(`The command failed:\n${err}`);
+            return this.onFail(message, `The command failed:\n${err}`);
         }
-    }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
     }
 }

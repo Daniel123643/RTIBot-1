@@ -32,16 +32,9 @@ export class SetEventCategoryCommand extends AdminCommand {
         if (permissions &&
             permissions.has([Permissions.FLAGS.MANAGE_CHANNELS!, Permissions.FLAGS.MANAGE_MESSAGES!], true)) {
             RtiBotGuild.get(message.guild).raidEventService.setChannelCategory(args.category);
-            if (args.category.guild !== message.guild) { return message.delete(); } // TODO:
-            message.react("✅");
-            return Promise.resolve([]);
+            return this.onSuccess(message);
         } else {
             return this.onFail(message, "Command failed, I need the following permissions in that category:\nManage Channels\nManage Messages");
         }
-    }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
     }
 }

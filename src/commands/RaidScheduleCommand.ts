@@ -17,7 +17,6 @@ export class RaidScheduleCommand extends AdminCommand {
 
     public run(message: CommandMessage): Promise<Message | Message[]> {
         RtiBotGuild.get(message.guild).raidEventService.addScheduleIn(message.channel as TextChannel);
-        message.react("✅");
-        return Promise.resolve([]);
+        return this.onSuccess(message);
     }
 }

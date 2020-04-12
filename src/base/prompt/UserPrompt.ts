@@ -27,7 +27,7 @@ export abstract class UserPrompt<T> {
             this.say(this.textPrompt + "\n" + UserPrompt.CANCEL_STRING);
             try {
                 const msg = await collector.next;
-                Logger.Log(Logger.Severity.Debug, msg.content);
+                Logger.Log(Logger.Severity.Debug, `Prompt response by ${this.user.username}: ${msg.content}`);
 
                 if (msg.content.trim().toLowerCase() === "cancel") {
                     break;
