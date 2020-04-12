@@ -8,6 +8,7 @@ enum LogEntryType {
     CLEARED,
     REGISTERED,
     UNREGISTERED,
+    KICKED,
 }
 
 type LogEntry = [number, LogEntryType, any];
@@ -42,6 +43,9 @@ export class RaidEventLog {
     public addEntryUnregistered(user: Snowflake, roleName: string) {
         this.entries.push([moment().unix(), LogEntryType.UNREGISTERED, { user, roleName }]);
     }
+    public addEntryKicked(kicked: Snowflake, issuer: Snowflake) {
+        this.entries.push([moment().unix(), LogEntryType.KICKED, { kicked, issuer }]);
+    }
 
     private formatEntry([time, type, data]: LogEntry): string {
         const timestamp = unix(time).format("DD/MM HH:mm");
@@ -58,6 +62,9 @@ export class RaidEventLog {
                 break;
             case LogEntryType.UNREGISTERED:
                 entryString = `${Util.toMention(data["user"])} unregistered from ${data["roleName"]}`;
+                break;
+            case LogEntryType.KICKED:
+                entryString = `${Util.toMention(data["kicked"])} kicked from the event by ${Util.toMention(data["issuer"])}`;
                 break;
             default:
                 entryString = "Unrecognized log entry";

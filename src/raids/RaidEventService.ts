@@ -1,4 +1,4 @@
-import { CategoryChannel, Guild, TextChannel, Snowflake, GuildMember } from "discord.js";
+import { CategoryChannel, Guild, TextChannel, Snowflake, GuildMember, User } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { SortedRaidChannelArray } from "./SortedRaidChannelArray";
 import { RaidEvent } from "./data/RaidEvent";
@@ -115,6 +115,22 @@ export class RaidEventService {
             return;
         }
         raidChannel.event.clearParticipants();
+        raidChannel.eventChanged.trigger();
+    }
+
+    /**
+     * Kick a single participant from a raid event
+     * @param channel The channel of the event to kick from
+     * @param user The user to kick from the event
+     * @param issuer The user who issued the kick command
+     */
+    public kickRaidParticipant(channel: TextChannel, user: User, issuer: User) {
+        const raidChannel = this.getRaidChannelOf(channel);
+        if (!raidChannel) {
+            Logger.Log(Logger.Severity.Error, "Trying to kick user from raid, but channel is not a raid channel: " + channel.name);
+            return;
+        }
+        raidChannel.event.unregister(user, issuer);
         raidChannel.eventChanged.trigger();
     }
 

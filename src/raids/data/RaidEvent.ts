@@ -102,11 +102,17 @@ export class RaidEvent {
 
     /**
      * Remove any registration to this event for a user.
+     * @param use The user to unregister
+     * @param kickedBy If the user was kicked, gives the user issuing the kick. If the user removed themselves then omit this parameter.
      */
-    public unregister(user: User) {
+    public unregister(user: User, kickedBy?: User) {
         this._roles.forEach(role => {
             if (role.unregister(user)) {
-                this._log.addEntryUnregistered(user.id, role.name);
+                if (kickedBy) {
+                    this._log.addEntryKicked(user.id, kickedBy.id);
+                } else {
+                    this._log.addEntryUnregistered(user.id, role.name);
+                }
             }
         });
     }
