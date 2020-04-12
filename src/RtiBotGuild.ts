@@ -30,7 +30,7 @@ export class RtiBotGuild {
         });
     }
 
-    private static instances: { [id: string]: RtiBotGuild } = {};
+    private static readonly instances: { [id: string]: RtiBotGuild } = {};
     private static rootDataPath: string;
 
     private _eventService: RaidEventService;
@@ -43,7 +43,7 @@ export class RtiBotGuild {
         return this._compositionService;
     }
 
-    private constructor(private guild: Guild) {
+    private constructor(private readonly guild: Guild) {
         const dataStore = new JsonDataStore(path.join(RtiBotGuild.rootDataPath, guild.id));
         RaidEventService.loadFrom(guild, dataStore).then(service => {
             this._eventService = service;

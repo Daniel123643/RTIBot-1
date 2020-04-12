@@ -1,6 +1,6 @@
 import { OfficerCommand } from "./base/OfficerCommand";
 import { CommandoClient, CommandMessage } from "discord.js-commando";
-import { Message, TextChannel, RichEmbed } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { Util } from "../Util";
 

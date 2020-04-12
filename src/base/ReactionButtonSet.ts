@@ -8,16 +8,16 @@ import { Util } from "../Util";
  */
 export class ReactionButtonSet {
     public buttonPressed: Event<[User, string]> = new Event();
-    private collector: ReactionCollector | undefined;
+    private readonly collector: ReactionCollector | undefined;
 
     /**
      * @param message The message to attach to
      * @param emojis The emojis to use
      */
-    public constructor(private message: Message, private emojis: string[]) {
+    public constructor(private readonly message: Message, private readonly emojis: string[]) {
         Util.resolvePromisesSeq(emojis.map(emoji => (() => message.react(emoji))));
 
-        const filter = (reaction: MessageReaction, user: User) => {
+        const filter = (_reaction: MessageReaction, user: User) => {
             return !user.bot;
         };
         this.collector = message.createReactionCollector(filter);

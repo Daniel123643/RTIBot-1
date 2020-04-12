@@ -8,7 +8,7 @@ import { UserPrompt } from "./UserPrompt";
  * Returns the index of the option chosen
  */
 export class MenuPrompt extends UserPrompt<number> {
-    private options: string[];
+    private readonly options: string[];
     public constructor(textPrompt: string,
                        user: User,
                        channel: TextChannel | DMChannel | GroupDMChannel,

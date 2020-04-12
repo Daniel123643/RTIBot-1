@@ -28,9 +28,9 @@ export class RaidEventView {
      * and then trigger this event to update the view.
      */
     public eventChanged: Event<void> = new Event();
-    private buttons: ReactionButtonSet;
+    private readonly buttons: ReactionButtonSet;
 
-    constructor(private view: PersistentView, private _data: RaidEvent) {
+    constructor(private readonly view: PersistentView, private readonly _data: RaidEvent) {
         this.update();
         this.buttons = new ReactionButtonSet(view.message, [RaidEventView.EMOJI_REGISTER,
                                                             RaidEventView.EMOJI_CANCEL]);

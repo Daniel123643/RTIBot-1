@@ -14,7 +14,7 @@ export class RaidEvent {
         return new RaidEvent(obj["_startTime"], obj["_endTime"], obj["_name"], obj["_description"], obj["_leaderId"], roles, log);
     }
 
-    private _log: RaidEventLog;
+    private readonly _log: RaidEventLog;
     /**
      * Create a new raid event
      * @param _startTime Unix timestamp for the start time of the event
@@ -25,13 +25,13 @@ export class RaidEvent {
      * @param _roles All roles required for the event
      */
     // TODO: make private
-    constructor(private _startTime: number,
-                private _endTime: number,
-                private _name: string,
-                private _description: string,
-                private _leaderId: Snowflake,
-                private _roles: RaidRole[],
-                private log?: RaidEventLog) {
+    constructor(private readonly _startTime: number,
+                private readonly _endTime: number,
+                private readonly _name: string,
+                private readonly _description: string,
+                private readonly _leaderId: Snowflake,
+                private readonly _roles: RaidRole[],
+                log?: RaidEventLog) {
         this._log = log ? log : new RaidEventLog();
         if (!log) { // this is a newly created event, not deserialized
             this._log.addEntryCreated(this._leaderId);

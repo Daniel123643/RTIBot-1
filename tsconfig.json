@@ -4,7 +4,8 @@
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "noUnusedLocals": true
   },
   "files": [
     "./node_modules/@types/node/index.d.ts"

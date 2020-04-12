@@ -21,7 +21,7 @@ export class RaidEventLog {
         return new RaidEventLog(obj["entries"]);
     }
 
-    private entries: LogEntry[];
+    private readonly entries: LogEntry[];
 
     public constructor(entries?: LogEntry[]) {
         this.entries = entries ? entries : [];

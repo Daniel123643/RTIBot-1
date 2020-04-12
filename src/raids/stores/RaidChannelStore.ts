@@ -11,7 +11,7 @@ import { RaidEvent } from "../data/RaidEvent";
 export class RaidChannelStore {
     private static readonly RECORD_NAME = "raids";
 
-    public constructor(private dataStore: IDataStore, private guild: Guild) { }
+    public constructor(private readonly dataStore: IDataStore, private readonly guild: Guild) { }
 
     /**
      * Save all raid channels (incl. their events) for the guild to the disk, allowing them to later be loaded.

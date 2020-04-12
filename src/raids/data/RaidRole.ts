@@ -27,8 +27,8 @@ export class RaidRole {
      * @param _requiredParticipants The required number of participants taking this role
      * @param _participants The players taking this role
      */
-    private constructor(private _name: string,
-                        private _requiredParticipants: number,
+    private constructor(private readonly _name: string,
+                        private readonly _requiredParticipants: number,
                         private _participants: RaidParticipant[]) {}
 
     public get name() {

@@ -18,12 +18,12 @@ export class RaidCompositionService {
         try {
             compositions = await compStore.loadCompositions();
         } catch { }
-        return new RaidCompositionService(guild, compStore, compositions);
+        return new RaidCompositionService(compStore, compositions);
     }
 
-    private raidCompositions: Collection<string, IRaidComposition>;
+    private readonly raidCompositions: Collection<string, IRaidComposition>;
 
-    constructor(private guild: Guild, private compositionStore: RaidCompositionStore, initialCompositions?: IRaidComposition[]) {
+    constructor(private readonly compositionStore: RaidCompositionStore, initialCompositions?: IRaidComposition[]) {
         this.raidCompositions = new Collection();
         if (initialCompositions) {
             initialCompositions.forEach(comp => {

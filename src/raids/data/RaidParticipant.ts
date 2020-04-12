@@ -10,8 +10,8 @@ export class RaidParticipant {
         return new RaidParticipant(obj["_userId"], obj["_registeredAt"], obj["status"]);
     }
 
-    constructor(private _userId: Snowflake,
-                private _registeredAt: number,
+    constructor(private readonly _userId: Snowflake,
+                private readonly _registeredAt: number,
                 public status: "participating" | "removed") {}
 
     /**

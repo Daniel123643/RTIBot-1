@@ -9,7 +9,7 @@ import { Logger } from "../../Logger";
 export class RaidCompositionStore {
     private static readonly RECORD_NAME = "compositions";
 
-    public constructor(private dataStore: IDataStore, private guild: Guild) { }
+    public constructor(private readonly dataStore: IDataStore, private readonly guild: Guild) { }
 
     /**
      * Saves raid comps

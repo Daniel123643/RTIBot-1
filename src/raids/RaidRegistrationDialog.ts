@@ -7,7 +7,7 @@ import { RaidRole } from "./data/RaidRole";
 export class RaidRegistrationDialog extends UserDialog<RaidRole> {
     public constructor(user: User,
                        channel: TextChannel | GroupDMChannel | DMChannel,
-                       private event: RaidEvent) {
+                       private readonly event: RaidEvent) {
         super(user, channel, "registration");
     }
 

@@ -5,7 +5,7 @@ import { RichEmbed } from "discord.js";
  * Displays a list of log entries in a pretty embed
  */
 export class LogView {
-    constructor(private title: string, private view: PersistentView) {}
+    constructor(private readonly title: string, private readonly view: PersistentView) {}
 
     public get message() {
         return this.view.message;

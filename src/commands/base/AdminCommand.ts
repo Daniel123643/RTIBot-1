@@ -1,4 +1,4 @@
-import { CommandMessage, Command, CommandoClient, CommandInfo } from "discord.js-commando";
+import { CommandMessage, CommandoClient, CommandInfo } from "discord.js-commando";
 import { RtiBotGuild } from "../../RtiBotGuild";
 import { BaseCommand } from "./BaseCommand";
 

@@ -1,4 +1,4 @@
-import { CategoryChannel, Guild, TextChannel, Snowflake, GuildMember, User } from "discord.js";
+import { CategoryChannel, Guild, TextChannel, Snowflake, User } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
 import { SortedRaidChannelArray } from "./SortedRaidChannelArray";
 import { RaidEvent } from "./data/RaidEvent";
@@ -37,8 +37,8 @@ export class RaidEventService {
 
     private static readonly CATEGORY_RECORD_NAME = "category";
 
-    private eventChannels: SortedRaidChannelArray;
-    private schedules: RaidScheduleView[];
+    private readonly eventChannels: SortedRaidChannelArray;
+    private readonly schedules: RaidScheduleView[];
 
     private channelCategory: CategoryChannel | undefined;
 
@@ -52,10 +52,10 @@ export class RaidEventService {
      * @param initialSchedules Loaded schedules to control
      * @param raidChannelCategory The category to create new raid channels in
      */
-    private constructor(private guild: Guild,
-                        private channelStore: RaidChannelStore,
-                        private scheduleStore: RaidScheduleViewStore,
-                        private genericStore: IDataStore,
+    private constructor(private readonly guild: Guild,
+                        private readonly channelStore: RaidChannelStore,
+                        private readonly scheduleStore: RaidScheduleViewStore,
+                        private readonly genericStore: IDataStore,
                         initialChannels?: RaidEventChannel[],
                         initialSchedules?: RaidScheduleView[],
                         raidChannelCategory?: CategoryChannel) {

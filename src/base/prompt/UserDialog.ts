@@ -1,20 +1,23 @@
-import { TextChannel, GroupDMChannel, DMChannel, User, MessageCollector, Message, Collection, Snowflake } from "discord.js";
+import { TextChannel, GroupDMChannel, DMChannel, User, Message, Collection } from "discord.js";
 
 // internal
-type DialogData = { groupId?: string, result: Promise<any> };
+interface IDialogData {
+    groupId?: string;
+    result: Promise<any>;
+}
 
 /**
  * Interacts with the user, and then returns some value.
  * Also ensures that conflicting dialogs aren't run at the same time.
  */
 export abstract class UserDialog<T> {
-    private static activeDialogs: Collection<string, DialogData> = new Collection();
-
     public static hasActiveDialog(user: User, channel: TextChannel | DMChannel | GroupDMChannel): boolean {
         return UserDialog.activeDialogs.get(user.id + channel.id) !== undefined;
     }
 
-    private static getActiveDialog(user: User, channel: TextChannel | DMChannel | GroupDMChannel): DialogData | undefined {
+    private static readonly activeDialogs: Collection<string, IDialogData> = new Collection();
+
+    private static getActiveDialog(user: User, channel: TextChannel | DMChannel | GroupDMChannel): IDialogData | undefined {
         return UserDialog.activeDialogs.get(user.id + channel.id);
     }
 
@@ -24,9 +27,9 @@ export abstract class UserDialog<T> {
      * @param groupId An optional specifier for the _type_ of dialog it is. While this dialog is running,
      *                      running another one with the same group id will cause that dialog to fail automatically
      */
-    public constructor(protected user: User,
-                       protected channel: TextChannel | GroupDMChannel | DMChannel,
-                       private groupId?: string) { }
+    public constructor(protected readonly user: User,
+                       protected readonly channel: TextChannel | GroupDMChannel | DMChannel,
+                       private readonly groupId?: string) { }
 
     /**
      * Runs the dialog and eventually returns some value.

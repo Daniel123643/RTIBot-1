@@ -1,4 +1,4 @@
-import { PathLike, writeFile, readFile, exists, existsSync, mkdirSync } from "fs";
+import { PathLike, writeFile, readFile, existsSync, mkdirSync } from "fs";
 import * as path from "path";
 import { Logger } from "../../Logger";
 import AsyncLock = require("async-lock");
@@ -8,8 +8,8 @@ import { IDataStore } from "./DataStore";
  * Stores and loads data to/from json files.
  */
 export class JsonDataStore implements IDataStore {
-    private lock: AsyncLock = new AsyncLock();
-    constructor(private directory: PathLike) {
+    private readonly lock: AsyncLock = new AsyncLock();
+    constructor(private readonly directory: PathLike) {
         if (!existsSync(directory)) {
             mkdirSync(directory);
         }

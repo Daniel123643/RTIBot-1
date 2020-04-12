@@ -1,12 +1,12 @@
 import { Message } from "discord.js";
-import { CommandMessage, CommandoClient, Argument } from "discord.js-commando";
+import { CommandMessage, CommandoClient } from "discord.js-commando";
 import moment = require("moment");
 import { Logger } from "../Logger";
 import { RaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { RaidRole } from "../raids/data/RaidRole";
 import { OfficerCommand } from "./base/OfficerCommand";
-import { RaidRolesParser, ParsedRaidRole } from "../raids/RaidRolesParser";
+import { ParsedRaidRole } from "../raids/RaidRolesParser";
 
 export class AddEventCommand extends OfficerCommand {
     constructor(client: CommandoClient) {

@@ -6,7 +6,7 @@ import { User, TextChannel, GroupDMChannel, DMChannel } from "discord.js";
  * A dialog that does nothing else but show a YesNoPrompt
  */
 export class YesNoDialog extends UserDialog<boolean> {
-    public constructor(private textPrompt: string,
+    public constructor(private readonly textPrompt: string,
                        user: User,
                        channel: TextChannel | GroupDMChannel | DMChannel,
                        groupId?: string) {

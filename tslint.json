@@ -15,7 +15,11 @@
         "max-classes-per-file": false,
         "ordered-imports": false,
         "no-string-literal": false,
-        "variable-name": false
+        "variable-name": false,
+        "no-unused-expression": true,
+        "prefer-readonly": true,
+        "interface-name": true,
+        "no-trailing-whitespace": true
     },
     "rulesDirectory": []
 }

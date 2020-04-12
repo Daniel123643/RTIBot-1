@@ -13,9 +13,9 @@ export abstract class UserPrompt<T> {
      * @param user The user to listen to
      * @param channel The channel to prompt and listen in
      */
-    public constructor(private textPrompt: string,
-                       private user: User,
-                       private channel: TextChannel | DMChannel | GroupDMChannel) {}
+    public constructor(private readonly textPrompt: string,
+                       private readonly user: User,
+                       private readonly channel: TextChannel | DMChannel | GroupDMChannel) {}
 
     /**
      * Run the prompt, interacting with the user until the prompt either gives a valid result, or is canceled.
@@ -50,12 +50,12 @@ export abstract class UserPrompt<T> {
         return Promise.reject();
     }
 
-    private say(msg: any): void {
-        this.channel.send((`${this.user}, ${msg}`));
-    }
-
     protected abstract validate(message: Message): { valid: boolean, msg: string | undefined };
 
     protected abstract parse(message: Message): T;
+
+    private say(msg: any): void {
+        this.channel.send((`${this.user}, ${msg}`));
+    }
 
 }

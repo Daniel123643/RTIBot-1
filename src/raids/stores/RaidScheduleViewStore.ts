@@ -10,7 +10,7 @@ import { IDataStore } from "../../base/data_store/DataStore";
 export class RaidScheduleViewStore {
     private static readonly RECORD_NAME = "schedules";
 
-    public constructor(private dataStore: IDataStore, private guild: Guild) { }
+    public constructor(private readonly dataStore: IDataStore, private readonly guild: Guild) { }
 
     /**
      * Save all schedule view to the disk.

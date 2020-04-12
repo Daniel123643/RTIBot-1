@@ -11,7 +11,7 @@ import { UserDialog } from "./base/prompt/UserDialog";
 class App {
     private client: CommandoClient;
 
-    constructor(private config: IConfig) {}
+    constructor(private readonly config: IConfig) {}
 
     public run() {
         this.client = new CommandoClient({

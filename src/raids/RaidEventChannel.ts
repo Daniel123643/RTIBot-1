@@ -1,5 +1,5 @@
 import { RaidEvent } from "./data/RaidEvent";
-import { DMChannel, GroupDMChannel, TextChannel, Snowflake, Client, Guild, CategoryChannel } from "discord.js";
+import { DMChannel, GroupDMChannel, TextChannel, Snowflake, Guild, CategoryChannel } from "discord.js";
 import { RaidEventView } from "./RaidEventView";
 import { Event } from "../base/Event";
 import { PersistentView } from "../base/PersistentView";
@@ -39,9 +39,9 @@ export class RaidEventChannel {
         return new RaidEventChannel(channel, view, logView);
     }
 
-    private constructor(private _channel: TextChannel | DMChannel | GroupDMChannel,
-                        private eventView: RaidEventView,
-                        private logView: LogView) {
+    private constructor(private readonly _channel: TextChannel | DMChannel | GroupDMChannel,
+                        private readonly eventView: RaidEventView,
+                        private readonly logView: LogView) {
         logView.render(eventView.data.logEntries);
         eventView.eventChanged.attach(() => {
             logView.render(eventView.data.logEntries);

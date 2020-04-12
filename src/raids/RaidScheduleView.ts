@@ -1,7 +1,5 @@
-import { RichEmbed, Message, Guild, TextChannel } from "discord.js";
+import { RichEmbed, Guild, TextChannel } from "discord.js";
 import { PersistentView } from "../base/PersistentView";
-import { RaidEvent } from "./data/RaidEvent";
-import { unix } from "moment";
 import { RaidEventChannel } from "./RaidEventChannel";
 
 /**
@@ -18,7 +16,7 @@ export class RaidScheduleView {
         return new RaidScheduleView(new PersistentView(message));
     }
 
-    public constructor(private view: PersistentView) {}
+    public constructor(private readonly view: PersistentView) {}
 
     /**
      * Sets the content to display

@@ -1,5 +1,5 @@
 import { CategoryChannel, Message, Permissions } from "discord.js";
-import { Command, CommandMessage, CommandoClient } from "discord.js-commando";
+import { CommandMessage, CommandoClient } from "discord.js-commando";
 import { RtiBotGuild } from "../RtiBotGuild";
 import { AdminCommand } from "./base/AdminCommand";
 

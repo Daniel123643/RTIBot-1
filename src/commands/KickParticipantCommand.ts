@@ -1,8 +1,7 @@
-import { CommandMessage, CommandoClient, Argument } from "discord.js-commando";
+import { CommandMessage, CommandoClient } from "discord.js-commando";
 import { Logger } from "../Logger";
 import { RaidEvent } from "../raids/data/RaidEvent";
 import { RtiBotGuild } from "../RtiBotGuild";
-import { RaidRole } from "../raids/data/RaidRole";
 import { OfficerCommand } from "./base/OfficerCommand";
 import { TextChannel, Message, User } from "discord.js";
 
@@ -58,7 +57,7 @@ export class KickParicipantCommand extends OfficerCommand {
             channel = args.raid_channel;
         }
         try {
-            const member = await message.guild.fetchMember(args.user_mention);
+            await message.guild.fetchMember(args.user_mention);
         } catch (e) {
             Logger.Log(Logger.Severity.Warn, `User '${args.user_mention.username}' not in ${message.guild.name} referenced in ${message.channel.id}.`);
             return this.onFail(message, "That user does not seem to be in this server.");
