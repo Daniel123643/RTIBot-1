@@ -78,7 +78,6 @@ export class AddEventCommand extends OfficerCommand {
                                 { name: "Anomymous Composition", roles: argComp };
 
         if (!composition) {
-            Logger.Log(Logger.Severity.Error, `Composition invalid for ${args.composition}.`);
             return this.onFail(message, "There is no composition with that name. Please use an existing one, or add a new one with '&compadd'.");
         }
 
