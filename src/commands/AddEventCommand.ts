@@ -39,18 +39,8 @@ export class AddEventCommand extends OfficerCommand {
                 },
                 {
                     key: "composition",
-                    parse: (val: string, msg: CommandMessage, arg: Argument) => {
-                        if (RaidRolesParser.validate(val)) {
-                            return RaidRolesParser.parse(val);
-                        }
-                        return val;
-                    },
                     prompt: "Give the composition for the raid. You may either specify the name of a saved composition (created with $compadd), or specify a custom one on the same format use by $compadd.",
-                    type: "string",
-                    validate: (val: string, msg: CommandMessage, arg: Argument) => {
-                        return RaidRolesParser.validate(val)
-                                || RtiBotGuild.get(msg.guild).raidCompositionService.getRaidComposition(val);
-                    },
+                    type: "roles|string",
                 },
                 {
                     default: 2,
@@ -89,7 +79,7 @@ export class AddEventCommand extends OfficerCommand {
 
         if (!composition) {
             Logger.Log(Logger.Severity.Error, `Composition invalid for ${args.composition}.`);
-            return this.onFail(message, "An unknown error occured using that raid composition. Try another one.");
+            return this.onFail(message, "There is no composition with that name. Please use an existing one, or add a new one with '&compadd'.");
         }
 
         const raidEvent = new RaidEvent(
