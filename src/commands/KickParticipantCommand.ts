@@ -69,12 +69,6 @@ export class KickParicipantCommand extends OfficerCommand {
         }
 
         raidService.kickRaidParticipant(channel, args.user_mention, message.author);
-        message.react("✅");
-        return Promise.resolve([]);
-    }
-
-    public onFail(message: CommandMessage, response: string) {
-        message.react("❌");
-        return message.reply(response);
+        return this.onSuccess(message);
     }
 }
