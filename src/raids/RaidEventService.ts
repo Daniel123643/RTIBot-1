@@ -142,7 +142,7 @@ export class RaidEventService {
      * @param channel The channel to show the schedule in
      */
     public async addScheduleIn(channel: TextChannel) {
-        const view = await PersistentView.createInChannel(channel, "Placeholder.");
+        const view = await PersistentView.createInChannel(channel);
         const schedule = new RaidScheduleView(view);
         this.schedules.push(schedule);
         this.scheduleStore.saveScheduleViews(this.schedules);

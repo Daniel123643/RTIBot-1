@@ -18,7 +18,8 @@ export class RaidChannelStore {
      * @param channels The events to save
      */
     public async saveChannels(channels: RaidEventChannel[]) {
-        const objs = channels.map(ch => ch.toObj());
+        const prms = channels.map(ch => ch.toObj());
+        const objs = Promise.all(prms);
         await this.dataStore.write(RaidChannelStore.RECORD_NAME, objs);
     }
 

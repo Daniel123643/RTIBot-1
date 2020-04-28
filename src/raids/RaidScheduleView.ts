@@ -13,7 +13,7 @@ export class RaidScheduleView {
         const channel = guild.channels.get(obj["channel"]);
         if (!channel) { return Promise.reject(); }
         const message = await (channel as TextChannel).fetchMessage(obj["msg"]);
-        return new RaidScheduleView(new PersistentView(message));
+        return new RaidScheduleView(PersistentView.createFromMessage(message));
     }
 
     public constructor(private readonly view: PersistentView) {}
@@ -39,7 +39,8 @@ export class RaidScheduleView {
     /**
      * Converts this to a JSON-serial>izable object reinstantiable via fromObj
      */
-    public toObj(): object {
-        return { msg: this.view.message.id, channel: this.view.message.channel.id };
+    public async toObj(): Promise<object> {
+        const message = await this.view.getMessage();
+        return { msg: message.id, channel: message.channel.id };
     }
 }

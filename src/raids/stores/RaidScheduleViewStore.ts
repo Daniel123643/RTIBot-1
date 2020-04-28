@@ -17,7 +17,8 @@ export class RaidScheduleViewStore {
      * @param scheduleViews The schedules to save
      */
     public saveScheduleViews(scheduleViews: RaidScheduleView[]) {
-        const obj = scheduleViews.map(view => view.toObj());
+        const prms = scheduleViews.map(view => view.toObj());
+        const obj = Promise.all(prms);
         return this.dataStore.write(RaidScheduleViewStore.RECORD_NAME, obj);
     }
 

@@ -19,7 +19,7 @@ export class RaidEventView {
         return this._data;
     }
     public get message() {
-        return this.view.message;
+        return this.view.getMessage();
     }
 
     /**
@@ -28,22 +28,24 @@ export class RaidEventView {
      * and then trigger this event to update the view.
      */
     public eventChanged: Event<void> = new Event();
-    private readonly buttons: ReactionButtonSet;
+    private buttons: ReactionButtonSet;
 
     constructor(private readonly view: PersistentView, private readonly _data: RaidEvent) {
         this.update();
-        this.buttons = new ReactionButtonSet(view.message, [RaidEventView.EMOJI_REGISTER,
-                                                            RaidEventView.EMOJI_CANCEL]);
-        this.buttons.buttonPressed.attach(([user, emoji]) => {
-            Logger.Log(Logger.Severity.Debug, "Button " + emoji + " pressed.");
-            switch (emoji) {
-                case RaidEventView.EMOJI_REGISTER:
-                    this.registerParticipant(user);
-                    break;
-                case RaidEventView.EMOJI_CANCEL:
-                    this.deregisterParticipant(user);
-                    break;
-            }
+        view.getMessage().then(msg => {
+            this.buttons = new ReactionButtonSet(msg, [RaidEventView.EMOJI_REGISTER,
+                                                                RaidEventView.EMOJI_CANCEL]);
+            this.buttons.buttonPressed.attach(([user, emoji]) => {
+                Logger.Log(Logger.Severity.Debug, "Button " + emoji + " pressed.");
+                switch (emoji) {
+                    case RaidEventView.EMOJI_REGISTER:
+                        this.registerParticipant(user);
+                        break;
+                    case RaidEventView.EMOJI_CANCEL:
+                        this.deregisterParticipant(user);
+                        break;
+                }
+            });
         });
         this.eventChanged.attach(this.update.bind(this));
     }
@@ -83,7 +85,7 @@ export class RaidEventView {
             }
         } catch (err) {
             if (err) {
-                this.view.message.channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
+                (await this.view.getMessage()).channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
             }
             Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");
         }
@@ -105,7 +107,7 @@ export class RaidEventView {
             }
         } catch (err) {
             if (err) {
-                this.view.message.channel.send(`${user}, Unable to send you a DM for deregistering from the raid. You probably have DMs disabled.`);
+                (await this.view.getMessage()).channel.send(`${user}, Unable to send you a DM for deregistering from the raid. You probably have DMs disabled.`);
             }
             Logger.Log(Logger.Severity.Debug, "A deregistration command was canceled.");
         }

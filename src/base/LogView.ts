@@ -8,7 +8,7 @@ export class LogView {
     constructor(private readonly title: string, private readonly view: PersistentView) {}
 
     public get message() {
-        return this.view.message;
+        return this.view.getMessage();
     }
 
     public render(logEntries: string[]): void {
