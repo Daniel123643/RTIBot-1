@@ -16,9 +16,9 @@ export class RaidScheduleViewStore {
      * Save all schedule view to the disk.
      * @param scheduleViews The schedules to save
      */
-    public saveScheduleViews(scheduleViews: RaidScheduleView[]) {
+    public async saveScheduleViews(scheduleViews: RaidScheduleView[]) {
         const prms = scheduleViews.map(view => view.toObj());
-        const obj = Promise.all(prms);
+        const obj = await Promise.all(prms);
         return this.dataStore.write(RaidScheduleViewStore.RECORD_NAME, obj);
     }
 

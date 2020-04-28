@@ -19,7 +19,7 @@ export class RaidChannelStore {
      */
     public async saveChannels(channels: RaidEventChannel[]) {
         const prms = channels.map(ch => ch.toObj());
-        const objs = Promise.all(prms);
+        const objs = await Promise.all(prms);
         await this.dataStore.write(RaidChannelStore.RECORD_NAME, objs);
     }
 
@@ -33,7 +33,10 @@ export class RaidChannelStore {
         });
         let results = await Util.allSettled(promises);
         results = results.filter(res => {
-            if (!res.successful) { Logger.Log(Logger.Severity.Warn, "Unable to load saved event: " + res.error); }
+            if (!res.successful) {
+                Logger.Log(Logger.Severity.Warn, "Unable to load saved event: " + res.error);
+                Logger.Log(Logger.Severity.Debug, "Saved event data: " + JSON.stringify(savedData));
+            }
             return res.successful;
         });
         Logger.Log(Logger.Severity.Info, `Loaded ${results.length} raid channels for ${this.guild.name}.`);
