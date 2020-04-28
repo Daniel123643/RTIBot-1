@@ -7,13 +7,14 @@ import { RaidRegistrationDialog } from "./RaidRegistrationDialog";
 import { Event } from "../base/Event";
 import { Util } from "../Util";
 import { YesNoDialog } from "../base/prompt/YesNoDialog";
+import { UnicodeEmoji } from "../base/UnicodeEmoji";
 
 /**
  * Displays a raid event as an embed message, and allows registering to the event via rection buttons on the message.
  */
 export class RaidEventView {
-    private static readonly EMOJI_REGISTER = "✅";
-    private static readonly EMOJI_CANCEL = "❌";
+    private static readonly EMOJI_REGISTER = UnicodeEmoji.Checkmark;
+    private static readonly EMOJI_CANCEL = UnicodeEmoji.Fail;
 
     public get data(): RaidEvent {
         return this._data;
