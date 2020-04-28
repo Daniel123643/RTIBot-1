@@ -57,8 +57,7 @@ export class RaidEventView {
         const content = new RichEmbed()
             .setTitle(`${this.data.name} @ ${startString}-${endString}`)
             .setDescription(this.data.description + "\n**Leader:** " + Util.toMention(this.data.leaderId))
-            .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg")
-            .setFooter("To register, press the checkmark.");
+            .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg");
 
         this.data.roles.forEach(role => {
             const title = `**${role.name}** (${role.numActiveParticipants}/${role.numRequiredParticipants})`;
@@ -69,6 +68,8 @@ export class RaidEventView {
             const nameStr = names.length > 0 ? names.join("\n") : "…";
             content.addField(title, nameStr, false);
         });
+        // NOTE: the field name contains a zero-width space to get around restrictions on empty names
+        content.addField("​", "See <#701553485023543336> for help with registering to raids.");
         this.view.setContent(content);
     }
 
