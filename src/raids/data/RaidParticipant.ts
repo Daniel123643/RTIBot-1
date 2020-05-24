@@ -1,6 +1,5 @@
 import { Snowflake } from "discord.js";
 import { Util } from "../../Util";
-import moment = require("moment");
 
 export type ParticipationStatus = "participating" | "reserve" | "removed";
 
@@ -9,11 +8,11 @@ export type ParticipationStatus = "participating" | "reserve" | "removed";
  */
 export class RaidParticipant {
     public static deserialize(obj: object): RaidParticipant {
-        return new RaidParticipant(obj["_userId"], obj["_registeredAt"], obj["status"]);
+        return new RaidParticipant(obj["_userId"], obj["registeredAt"], obj["status"]);
     }
 
     constructor(private readonly _userId: Snowflake,
-                private readonly _registeredAt: number,
+                public registeredAt: number,
                 public status: ParticipationStatus) {}
 
     /**
@@ -21,13 +20,6 @@ export class RaidParticipant {
      */
     public get userId() {
         return this._userId;
-    }
-
-    /**
-     * The time when the participant was first registered.
-     */
-    public get registeredAt(): moment.Moment {
-        return moment(this._registeredAt);
     }
 
     public render(): string {

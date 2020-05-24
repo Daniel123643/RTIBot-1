@@ -9,6 +9,13 @@ import { UserPrompt } from "./UserPrompt";
  */
 export class MenuPrompt extends UserPrompt<number> {
     private readonly options: string[];
+    /**
+     *
+     * @param textPrompt Prompt shown as the title
+     * @param user User to listen to
+     * @param channel Channel to listen in
+     * @param options Options to choose from
+     */
     public constructor(textPrompt: string,
                        user: User,
                        channel: TextChannel | DMChannel | GroupDMChannel,
@@ -16,7 +23,7 @@ export class MenuPrompt extends UserPrompt<number> {
         // Formats the options:
         //   `1.` like
         //   `2.` this
-        const content = options.map((opt, i) => `  \`${i + 1}.\` ${opt}`).join("\n") + "\n" +
+        const content = options.map((opt, i) => `  \`${i + 1}. ${opt}\``).join("\n") + "\n" +
                         "Please type in a number to select an option.";
         super(textPrompt, content, user, channel);
         this.options = options;

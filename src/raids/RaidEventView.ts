@@ -89,13 +89,14 @@ export class RaidEventView {
                 await Util.sendPrettyMessage(dmc, "You are already registered for this raid.");
                 return;
             }
-            const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
-            if (role) {
-                this.data.register(user, role);
+            const registration = await new RaidRegistrationDialog(user, dmc, this.data).run();
+            if (registration) {
+                this.data.register(user, registration.role, registration.status);
                 this.eventChanged.trigger();
             }
         } catch (err) {
             if (err) {
+                Logger.LogError(Logger.Severity.Debug, err);
                 Util.sendPrettyMessage((await this.view.getMessage()).channel, `${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
             }
             Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");
@@ -118,6 +119,7 @@ export class RaidEventView {
             }
         } catch (err) {
             if (err) {
+                Logger.LogError(Logger.Severity.Debug, err);
                 Util.sendPrettyMessage((await this.view.getMessage()).channel, `${user}, Unable to send you a DM for unregistering from the raid. You probably have DMs disabled.`);
             }
             Logger.Log(Logger.Severity.Debug, "An unregistration command was canceled.");

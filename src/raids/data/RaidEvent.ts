@@ -71,7 +71,7 @@ export class RaidEvent {
 
     /**
      * Gets the number of active participants registered to this event, e.g. participants
-     * who have not been removed.
+     * with status "participating"
      */
     public get numCurrentParticipants(): number {
         return this._roles.map(r => r.numActiveParticipants).reduce((q, acc) => q + acc, 0);
@@ -91,13 +91,15 @@ export class RaidEvent {
      * Register a user to participate in this event as the given role.
      * @param user The user to register
      * @param role The role to register them for
+     * @param status The status to give them
      */
-    public register(user: User, role: RaidRole) {
+    public register(user: User, role: RaidRole, status: "participating" | "reserve") {
         this._roles.forEach(r => {
+            if (r === role) { return; }
             r.clearRegistration(user);
         });
-        role.register(user);
-        this._log.addEntryRegistered(user.id, role.name);
+        role.createOrUpdateParticipant(user, status);
+        this._log.addEntryRegistered(user.id, role.name, status === "reserve");
     }
 
     /**
@@ -107,11 +109,13 @@ export class RaidEvent {
      */
     public unregister(user: User, kickedBy?: User) {
         this._roles.forEach(role => {
-            if (role.unregister(user)) {
+            const participant = role.participants.find(p => p.userId === user.id);
+            if (participant) {
+                role.createOrUpdateParticipant(user, "removed");
                 if (kickedBy) {
                     this._log.addEntryKicked(user.id, kickedBy.id);
                 } else {
-                    this._log.addEntryUnregistered(user.id, role.name);
+                    this._log.addEntryUnregistered(user.id, role.name, participant.status === "reserve");
                 }
             }
         });
