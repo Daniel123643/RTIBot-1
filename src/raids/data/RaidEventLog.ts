@@ -52,25 +52,25 @@ export class RaidEventLog {
         let entryString: string;
         switch (type) {
             case LogEntryType.CREATED:
-                entryString = `Raid created by ${Util.toMention(data)}`;
+                entryString = `Raid *created* by ${Util.toMention(data)}`;
                 break;
             case LogEntryType.CLEARED:
-                entryString = `All registrations cleared by ${Util.toMention(data)}`;
+                entryString = `All registrations *cleared* by ${Util.toMention(data)}`;
                 break;
             case LogEntryType.REGISTERED:
-                entryString = `${Util.toMention(data["user"])} registered as ${data["roleName"]}`;
+                entryString = `${Util.toMention(data["user"])} *registered* as ${data["roleName"]}`;
                 break;
             case LogEntryType.UNREGISTERED:
-                entryString = `${Util.toMention(data["user"])} unregistered from ${data["roleName"]}`;
+                entryString = `${Util.toMention(data["user"])} *unregistered* from ${data["roleName"]}`;
                 break;
             case LogEntryType.KICKED:
-                entryString = `${Util.toMention(data["kicked"])} kicked from the raid by ${Util.toMention(data["issuer"])}`;
+                entryString = `${Util.toMention(data["kicked"])} *kicked* from the raid by ${Util.toMention(data["issuer"])}`;
                 break;
             default:
                 entryString = "Unrecognized log entry";
                 break;
         }
 
-        return `**[${timestamp}]** ${entryString}`;
+        return `[${timestamp}] ${entryString}`;
     }
 }
