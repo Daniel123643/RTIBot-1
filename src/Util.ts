@@ -1,4 +1,4 @@
-import { Snowflake } from "discord.js";
+import { Snowflake, RichEmbed, TextChannel, DMChannel, GroupDMChannel } from "discord.js";
 
 export namespace Util {
     /**
@@ -11,6 +11,17 @@ export namespace Util {
         str = str.replace(/\s+/, "-");
         str = str.replace(/[^a-z0-9-]/, "");
         return str;
+    }
+
+    /**
+     * Sends an embed with a single short message.
+     * @param channel The channel to send in
+     * @param content The message content
+     */
+    export async function sendPrettyMessage(channel: TextChannel | DMChannel | GroupDMChannel, content: string) {
+        const embed = new RichEmbed();
+        embed.setDescription(content);
+        return channel.send(embed);
     }
 
     /**

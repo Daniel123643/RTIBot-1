@@ -16,11 +16,9 @@ export class MenuPrompt extends UserPrompt<number> {
         // Formats the options:
         //   `1.` like
         //   `2.` this
-        const prompt = textPrompt
-                       + "\n"
-                       + options.map((opt, i) => `  \`${i + 1}.\` ${opt}`).join("\n")
-                       + "\nPlease type in a number to select an option.";
-        super(prompt, user, channel);
+        const content = options.map((opt, i) => `  \`${i + 1}.\` ${opt}`).join("\n") + "\n" +
+                        "Please type in a number to select an option.";
+        super(textPrompt, content, user, channel);
         this.options = options;
     }
 
@@ -46,8 +44,8 @@ export class YesNoPrompt extends UserPrompt<boolean> {
     public constructor(textPrompt: string,
                        user: User,
                        channel: TextChannel | DMChannel | GroupDMChannel) {
-        const prompt = textPrompt + "\nPlease respond with either `yes` or `no`.";
-        super(prompt, user, channel);
+        const footer = "Please respond with either `yes` or `no`.";
+        super(textPrompt, footer, user, channel);
     }
 
     protected validate(message: Message): { valid: boolean; msg: string | undefined; } {

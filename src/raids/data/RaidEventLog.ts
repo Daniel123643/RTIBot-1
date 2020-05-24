@@ -64,7 +64,7 @@ export class RaidEventLog {
                 entryString = `${Util.toMention(data["user"])} unregistered from ${data["roleName"]}`;
                 break;
             case LogEntryType.KICKED:
-                entryString = `${Util.toMention(data["kicked"])} kicked from the event by ${Util.toMention(data["issuer"])}`;
+                entryString = `${Util.toMention(data["kicked"])} kicked from the raid by ${Util.toMention(data["issuer"])}`;
                 break;
             default:
                 entryString = "Unrecognized log entry";

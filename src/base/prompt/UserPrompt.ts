@@ -1,5 +1,6 @@
-import { DMChannel, GroupDMChannel, Message, TextChannel, User } from "discord.js";
+import { DMChannel, GroupDMChannel, Message, TextChannel, User, RichEmbed } from "discord.js";
 import { Logger } from "../../Logger";
+import { Util } from "../../Util";
 
 /**
  * Interactively prompts the user for some data as part of a dialog
@@ -9,11 +10,12 @@ export abstract class UserPrompt<T> {
 
     /**
      * Create a new prompt.
-     * @param textPrompt A prompt to show to the user (a mention will be added at the start)
-     * @param user The user to listen to
+     * @param title The title
+     * @param content The main content
      * @param channel The channel to prompt and listen in
      */
-    public constructor(private readonly textPrompt: string,
+    public constructor(private readonly title: string | undefined,
+                       private readonly content: string | undefined,
                        private readonly user: User,
                        private readonly channel: TextChannel | DMChannel | GroupDMChannel) {}
 
@@ -24,7 +26,7 @@ export abstract class UserPrompt<T> {
         const collector = this.channel.createMessageCollector((m: Message) => m.author === this.user, { time: 30000 });
 
         while (true) {
-            this.say(this.textPrompt + "\n" + UserPrompt.CANCEL_STRING);
+            this.say(this.title, this.content);
             try {
                 const msg = await collector.next;
                 Logger.Log(Logger.Severity.Debug, `Prompt response by ${this.user.username}: ${msg.content}`);
@@ -45,7 +47,7 @@ export abstract class UserPrompt<T> {
         }
 
         Logger.Log(Logger.Severity.Debug, "Prompt canceled");
-        this.say("The command was canceled.");
+        Util.sendPrettyMessage(this.channel, "The command was canceled.");
         collector.stop();
         return Promise.reject();
     }
@@ -54,8 +56,12 @@ export abstract class UserPrompt<T> {
 
     protected abstract parse(message: Message): T;
 
-    private say(msg: any): void {
-        this.channel.send((`${this.user}, ${msg}`));
+    private say(title?: string, content?: string): void {
+        const embed = new RichEmbed();
+        if (title) { embed.setTitle(title); }
+        if (content) { embed.setDescription(content); }
+        embed.setFooter(UserPrompt.CANCEL_STRING);
+        this.channel.send(embed);
     }
 
 }

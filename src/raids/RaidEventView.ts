@@ -75,11 +75,11 @@ export class RaidEventView {
 
     private async registerParticipant(user: User): Promise<void> {
         try {
+            const dmc = await user.createDM();
             if (this.data.getParticipationStatusOf(user) === "participating") {
-                await user.send("You are already registered for this event.");
+                await Util.sendPrettyMessage(dmc, "You are already registered for this raid.");
                 return;
             }
-            const dmc = await user.createDM();
             const role = await new RaidRegistrationDialog(user, dmc, this.data).run();
             if (role) {
                 this.data.register(user, role);
@@ -87,7 +87,7 @@ export class RaidEventView {
             }
         } catch (err) {
             if (err) {
-                (await this.view.getMessage()).channel.send(`${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
+                Util.sendPrettyMessage((await this.view.getMessage()).channel, `${user}, Unable to send you a DM for registering to the raid. You probably have DMs disabled.`);
             }
             Logger.Log(Logger.Severity.Debug, "A registration command was canceled.");
         }
@@ -96,22 +96,22 @@ export class RaidEventView {
     private async deregisterParticipant(user: User): Promise<void> {
         try {
             const status = this.data.getParticipationStatusOf(user);
+            const dmc = await user.createDM();
             if (!status || status === "removed") {
-                user.send("You are not registered for this event.");
+                await Util.sendPrettyMessage(dmc, "You are not registered for this raid.");
                 return;
             }
-            const dmc = await user.createDM();
-            const cont = await new YesNoDialog("Are you sure you want to deregister from the event \"" + this.data.name + "\"?", user, dmc).run();
+            const cont = await new YesNoDialog(`Are you sure you want to unregister from the raid "${this.data.name}"?`, user, dmc).run();
             if (cont) {
                 this.data.unregister(user);
                 this.eventChanged.trigger();
-                await dmc.send("You have been deregistered from the event.");
+                await Util.sendPrettyMessage(dmc, "You have been unregistered from the raid.");
             }
         } catch (err) {
             if (err) {
-                (await this.view.getMessage()).channel.send(`${user}, Unable to send you a DM for deregistering from the raid. You probably have DMs disabled.`);
+                Util.sendPrettyMessage((await this.view.getMessage()).channel, `${user}, Unable to send you a DM for unregistering from the raid. You probably have DMs disabled.`);
             }
-            Logger.Log(Logger.Severity.Debug, "A deregistration command was canceled.");
+            Logger.Log(Logger.Severity.Debug, "An unregistration command was canceled.");
         }
     }
 }

@@ -1,4 +1,5 @@
 import { TextChannel, GroupDMChannel, DMChannel, User, Message, Collection } from "discord.js";
+import { Util } from "../../Util";
 
 // internal
 interface IDialogData {
@@ -51,7 +52,7 @@ export abstract class UserDialog<T> {
     }
 
     protected say(msg: any): Promise<Message | Message[]> {
-        return this.channel.send((`${this.user}, ${msg}`));
+        return Util.sendPrettyMessage(this.channel, msg);
     }
 
     protected abstract async doExecute(): Promise<T>;
