@@ -57,7 +57,7 @@ export class RaidEventView {
         const content = new RichEmbed()
             .setTitle(`${this.data.name} @ ${startString}-${endString}`)
             .setDescription(this.data.description + "\n**Leader:** " + Util.toMention(this.data.leaderId))
-            .setThumbnail("https://wiki.guildwars2.com/images/thumb/7/7a/Deimos.jpg/240px-Deimos.jpg");
+            .setThumbnail("https://cdn.discordapp.com/icons/156175293055369216/159ecf8097a61828bb42f4ed6c836223.webp");
 
         this.data.roles.forEach(role => {
             const title = `**${role.name}** (${role.numActiveParticipants}/${role.numRequiredParticipants})`;
