@@ -1,7 +1,8 @@
-import { RaidParticipant } from "./RaidParticipant";
+import { ParticipationStatus, RaidParticipant } from "./RaidParticipant";
 import moment = require("moment");
 import { IRaidComposition } from "../compositions/RaidComposition";
 import { User } from "discord.js";
+import { Logger } from "../../Logger";
 
 /**
  * A role in a raid (e.g. healer)
@@ -35,6 +36,10 @@ export class RaidRole {
         return this._name;
     }
 
+    public get participants() {
+        return this._participants;
+    }
+
     /**
      * Gets the number of participants needed for this role.
      */
@@ -51,10 +56,11 @@ export class RaidRole {
     }
 
     /**
-     * Gets all participants, sorted by registration time (with removed participants at the end).
+     * Gets all participants with a given status, sorted by registration time.
      */
-    public get participantsSorted(): RaidParticipant[] {
-        return this._participants.sort((p1, p2) => {
+    public getParticipantsByStatus(status: ParticipationStatus): RaidParticipant[] {
+        const filtered = this._participants.filter(participant => participant.status === status);
+        return filtered.sort((p1, p2) => {
             if (p1.status !== p2.status) {
                 return p1.status === "participating" ? -1 : 1;
             }
@@ -70,6 +76,13 @@ export class RaidRole {
     public unregister(user: User): boolean {
         const participant = this._participants.find(p => p.userId === user.id);
         if (participant) {
+            // If needed, promote a reserve to fill the spot
+            const reserves = this.getParticipantsByStatus("reserve");
+            if (participant.status === "participating" && reserves.length > 0) {
+                const promotee = reserves.sort((p1, p2) => p2.registeredAt.diff(p1.registeredAt, "minutes"))[0];
+                promotee.status = "participating";
+                Logger.Log(Logger.Severity.Debug, `Promoted ${promotee.userId} after unregistering ${user.username}`);
+            }
             participant.status = "removed";
         }
         return participant !== undefined;
@@ -79,10 +92,12 @@ export class RaidRole {
      * Register a user to participate as this role.
      */
     public register(user: User) {
+        const participating = this.getParticipantsByStatus("participating");
+        const status: ParticipationStatus = participating.length < this.numRequiredParticipants ? "participating" : "reserve";
         this._participants.push(new RaidParticipant(
             user.id,
             moment().unix(),
-            "participating"));
+            status));
     }
 
     /**

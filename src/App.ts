@@ -68,6 +68,7 @@ function load_configuration(): IConfig | null {
         Logger.Log(Logger.Severity.Error, "No configuration specified.");
         return null;
     }
+    Logger.Log(Logger.Severity.Info, `Using config '${config}'.`);
     let confFile: string;
     switch (config) {
         case "Release":

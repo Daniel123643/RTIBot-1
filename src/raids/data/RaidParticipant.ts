@@ -2,6 +2,8 @@ import { Snowflake } from "discord.js";
 import { Util } from "../../Util";
 import moment = require("moment");
 
+export type ParticipationStatus = "participating" | "reserve" | "removed";
+
 /**
  * A player participating in a raid event
  */
@@ -12,7 +14,7 @@ export class RaidParticipant {
 
     constructor(private readonly _userId: Snowflake,
                 private readonly _registeredAt: number,
-                public status: "participating" | "removed") {}
+                public status: ParticipationStatus) {}
 
     /**
      * The discord id of the participant.

@@ -15,7 +15,7 @@ export class BroadcastCommand extends OfficerCommand {
                     type: "string",
                 },
             ],
-            description: "Pings all participants of a raid with a message.",
+            description: "Pings all participants of a raid with a message (does **not** ping reserves).",
             group: "raids",
             guildOnly: true,
             memberName: "broadcast",
@@ -30,7 +30,7 @@ export class BroadcastCommand extends OfficerCommand {
         if (!ev) {
             return this.onFail(message, "Please run this command in a raid channel.");
         }
-        const users = ev.roles.flatMap(role => role.participantsSorted.filter(p => p.status !== "removed").map(p => p.userId));
+        const users = ev.roles.flatMap(role => role.getParticipantsByStatus("participating").filter(p => p.status !== "removed").map(p => p.userId));
         if (message.author.id === ev.leaderId) {
             const i = users.indexOf(ev.leaderId);
             if (i > -1) { users.splice(i,  1); }

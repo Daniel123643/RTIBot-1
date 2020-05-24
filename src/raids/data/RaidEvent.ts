@@ -1,11 +1,11 @@
 import { User, Snowflake } from "discord.js";
 import { RaidRole } from "./RaidRole";
-import { RaidParticipant } from "./RaidParticipant";
+import { RaidParticipant, ParticipationStatus } from "./RaidParticipant";
 import moment = require("moment");
 import { RaidEventLog } from "./RaidEventLog";
 
 /**
- * A raid schedule event
+ * A raid training event scheduled by a guild officer
  */
 export class RaidEvent {
     public static deserialize(obj: object): RaidEvent {
@@ -73,7 +73,7 @@ export class RaidEvent {
      * Gets the number of active participants registered to this event, e.g. participants
      * who have not been removed.
      */
-    public get numActiveParticipants(): number {
+    public get numCurrentParticipants(): number {
         return this._roles.map(r => r.numActiveParticipants).reduce((q, acc) => q + acc, 0);
     }
 
@@ -81,8 +81,8 @@ export class RaidEvent {
      * Checks whether a user is registered to the event, and in that case
      * returns the status of their registration.
      */
-    public getParticipationStatusOf(user: User): "participating" | "removed" | undefined {
-        return this._roles.flatMap((role: RaidRole) => role.participantsSorted)
+    public getParticipationStatusOf(user: User): ParticipationStatus | undefined {
+        return this._roles.flatMap((role: RaidRole) => role.participants)
                           .find((part: RaidParticipant) => part.userId === user.id)
                           ?.status;
     }
@@ -120,9 +120,10 @@ export class RaidEvent {
     /**
      * Clear all participants completely
      */
-    public clearParticipants() {
+    public clearParticipants(issuer: User) {
         this.roles.forEach(role => {
             role.clearAll();
         });
+        this._log.addEntryCleared(issuer.id);
     }
 }

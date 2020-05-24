@@ -109,14 +109,15 @@ export class RaidEventService {
     /**
      * Remove all participants from a raid event
      * @param channel The channel of the event to clear
+     * @param issuer The user who issued the command
      */
-    public clearRaidParticipants(channel: TextChannel) {
+    public clearRaidParticipants(channel: TextChannel, issuer: User) {
         const raidChannel = this.getRaidChannelOf(channel);
         if (!raidChannel) {
             Logger.Log(Logger.Severity.Error, "Trying to clear raid, but channel is not a raid channel: " + channel.name);
             return;
         }
-        raidChannel.event.clearParticipants();
+        raidChannel.event.clearParticipants(issuer);
         raidChannel.eventChanged.trigger();
         Logger.Log(Logger.Severity.Info, "Cleared raid " + raidChannel.event.name);
     }
@@ -142,7 +143,7 @@ export class RaidEventService {
      * @param channel The channel to show the schedule in
      */
     public async addScheduleIn(channel: TextChannel) {
-        const view = await PersistentView.createInChannel(channel);
+        const view = PersistentView.createInChannel(channel);
         const schedule = new RaidScheduleView(view);
         this.schedules.push(schedule);
         this.scheduleStore.saveScheduleViews(this.schedules);

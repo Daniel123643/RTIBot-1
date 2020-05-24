@@ -51,14 +51,14 @@ export class ClearEventCommand extends OfficerCommand {
             channel = args.raid_channel;
         }
 
-        if (event.numActiveParticipants === 0) {
+        if (event.numCurrentParticipants === 0) {
             return this.onFail(message, "The raid is already empty.");
         }
 
         try {
-            const prompt = `You are about to clear ${event.numActiveParticipants} participants from the raid '${event.name}'. Are you sure?`;
+            const prompt = `You are about to clear ${event.numCurrentParticipants} participants from the raid '${event.name}'. Are you sure?`;
             if (await new YesNoDialog(prompt, message.author, message.channel).run()) {
-                raidService.clearRaidParticipants(channel);
+                raidService.clearRaidParticipants(channel, message.author);
                 return this.onSuccess(message);
             } else {
                 return message.reply("Canceled.");

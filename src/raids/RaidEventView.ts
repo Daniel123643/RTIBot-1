@@ -15,6 +15,7 @@ import { UnicodeEmoji } from "../base/UnicodeEmoji";
 export class RaidEventView {
     private static readonly EMOJI_REGISTER = UnicodeEmoji.Checkmark;
     private static readonly EMOJI_CANCEL = UnicodeEmoji.Fail;
+    private static readonly ELLIPSIS = "…";
 
     public get data(): RaidEvent {
         return this._data;
@@ -62,12 +63,19 @@ export class RaidEventView {
         this.data.roles.forEach(role => {
             const title = `**${role.name}** (${role.numActiveParticipants}/${role.numRequiredParticipants})`;
 
-            const participants = role.participantsSorted;
-            const names = participants.map(participant => participant.render());
-            if (names.length > role.numRequiredParticipants) { names.splice(role.numRequiredParticipants, 0, "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯"); }
-            const nameStr = names.length > 0 ? names.join("\n") : "…";
+            const participating = role.getParticipantsByStatus("participating");
+            const removed = role.getParticipantsByStatus("removed");
+            const merged = participating.concat(removed);
+            const names = merged.map(participant => participant.render());
+            const nameStr = names.length > 0 ? names.join("\n") : RaidEventView.ELLIPSIS;
             content.addField(title, nameStr, false);
         });
+        let reserves: string[] = [];
+        this.data.roles.forEach(role => {
+            const roleReserves = role.getParticipantsByStatus("reserve");
+            reserves = reserves.concat(roleReserves.map(participant => `${participant.render()} (${role.name})`));
+        });
+        content.addField("Reserves", reserves.length > 0 ? reserves : RaidEventView.ELLIPSIS);
         // NOTE: the field name contains a zero-width space to get around restrictions on empty names
         content.addField("​", "See <#701553485023543336> for help with registering to raids.");
         this.view.setContent(content);
@@ -76,7 +84,8 @@ export class RaidEventView {
     private async registerParticipant(user: User): Promise<void> {
         try {
             const dmc = await user.createDM();
-            if (this.data.getParticipationStatusOf(user) === "participating") {
+            const status = this.data.getParticipationStatusOf(user);
+            if (status === "participating" || status === "reserve") {
                 await Util.sendPrettyMessage(dmc, "You are already registered for this raid.");
                 return;
             }

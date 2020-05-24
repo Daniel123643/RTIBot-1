@@ -63,7 +63,8 @@ export class KickParicipantCommand extends OfficerCommand {
             return this.onFail(message, "That user does not seem to be in this server.");
         }
 
-        if (event.getParticipationStatusOf(args.user_mention) !== "participating") {
+        const status = event.getParticipationStatusOf(args.user_mention);
+        if (status !== "participating" && status !== "reserve") {
             return this.onFail(message, "That user is not registered for this event.");
         }
 
