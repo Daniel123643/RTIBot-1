@@ -10,6 +10,7 @@ export class BroadcastCommand extends OfficerCommand {
             aliases: ["bc"],
             args: [
                 {
+                    default: "",
                     key: "message",
                     prompt: "Give the message to send to the participants.",
                     type: "string",
@@ -30,14 +31,14 @@ export class BroadcastCommand extends OfficerCommand {
         if (!ev) {
             return this.onFail(message, "Please run this command in a raid channel.");
         }
-        const users = ev.roles.flatMap(role => role.getParticipantsByStatus("participating").filter(p => p.status !== "removed").map(p => p.userId));
+        const users = ev.roles.flatMap(role => role.getParticipantsByStatus("participating").map(p => p.userId));
         if (message.author.id === ev.leaderId) {
             const i = users.indexOf(ev.leaderId);
             if (i > -1) { users.splice(i,  1); }
         } else if (users.indexOf(ev.leaderId) === -1) {
             users.push(ev.leaderId);
         }
-        const msg = `${message.author} says:\n${args.message}\n\n${users.map(uId => Util.toMention(uId)).join()}`;
+        const msg = `${message.author} says:\n${args.message}\n${users.map(uId => Util.toMention(uId)).join()}`;
         message.channel.send(msg);
         message.react("✅");
         return message.delete(5000);
