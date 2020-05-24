@@ -1,7 +1,7 @@
-{ 
-    "prefix": "!", 
-    "apiKey": "NjI2NTg3NjgyMTUxMDcxNzU0.XYz8Bg.A2SQy1TnWtnrUSK3JGhjkSxVc9c", 
-    "ownerId": "128974046086955009", 
-    "activityString": "Nodejs", 
-    "dataStoreDirectory": "./data" 
+{
+    "prefix": "!",
+    "apiKey": "",
+    "ownerId": "128974046086955009",
+    "activityString": "Nodejs",
+    "dataStoreDirectory": "./data"
 }
