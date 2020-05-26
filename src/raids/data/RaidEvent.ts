@@ -88,6 +88,14 @@ export class RaidEvent {
     }
 
     /**
+     * Checks whether a user is registered to the event, and in that case
+     * returns the role they are registered for.
+     */
+    public getRoleOf(user: User): RaidRole | undefined {
+        return this._roles.find((role: RaidRole) => role.participants.find((part: RaidParticipant) => part.userId === user.id));
+    }
+
+    /**
      * Register a user to participate in this event as the given role.
      * @param user The user to register
      * @param role The role to register them for

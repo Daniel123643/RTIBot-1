@@ -1,6 +1,7 @@
 import { DMChannel, GroupDMChannel, Message, TextChannel, User, RichEmbed } from "discord.js";
 import { Logger } from "../../Logger";
 import { Util } from "../../Util";
+import { UnicodeEmoji } from "../UnicodeEmoji";
 
 /**
  * Interactively prompts the user for some data as part of a dialog
@@ -47,7 +48,7 @@ export abstract class UserPrompt<T> {
         }
 
         Logger.Log(Logger.Severity.Debug, "Prompt canceled");
-        Util.sendPrettyMessage(this.channel, "The command was canceled.");
+        Util.sendPrettyMessage(this.channel, UnicodeEmoji.Fail + " The command was canceled.");
         collector.stop();
         return Promise.reject();
     }

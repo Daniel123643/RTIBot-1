@@ -13,7 +13,7 @@ import { UnicodeEmoji } from "../base/UnicodeEmoji";
  * Displays a raid event as an embed message, and allows registering to the event via rection buttons on the message.
  */
 export class RaidEventView {
-    private static readonly EMOJI_REGISTER = UnicodeEmoji.Checkmark;
+    private static readonly EMOJI_REGISTER = UnicodeEmoji.Memo;
     private static readonly EMOJI_CANCEL = UnicodeEmoji.Fail;
     private static readonly ELLIPSIS = "…";
 
@@ -36,7 +36,7 @@ export class RaidEventView {
         this.update();
         view.getMessage().then(msg => {
             this.buttons = new ReactionButtonSet(msg, [RaidEventView.EMOJI_REGISTER,
-                                                                RaidEventView.EMOJI_CANCEL]);
+                                                        RaidEventView.EMOJI_CANCEL]);
             this.buttons.buttonPressed.attach(([user, emoji]) => {
                 Logger.Log(Logger.Severity.Debug, "Button " + emoji + " pressed.");
                 switch (emoji) {
@@ -84,14 +84,8 @@ export class RaidEventView {
     private async registerParticipant(user: User): Promise<void> {
         try {
             const dmc = await user.createDM();
-            const status = this.data.getParticipationStatusOf(user);
-            if (status === "participating" || status === "reserve") {
-                await Util.sendPrettyMessage(dmc, "You are already registered for this raid.");
-                return;
-            }
-            const registration = await new RaidRegistrationDialog(user, dmc, this.data).run();
-            if (registration) {
-                this.data.register(user, registration.role, registration.status);
+            const changed = await new RaidRegistrationDialog(user, dmc, this.data).run();
+            if (changed) {
                 this.eventChanged.trigger();
             }
         } catch (err) {
