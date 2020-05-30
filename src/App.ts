@@ -2,11 +2,11 @@ import { CommandoClient, CommandMessage } from "discord.js-commando";
 import * as path from "path";
 import { IConfig } from "./Config";
 import { Logger } from "./Logger";
-import { RaidRolesArgumentType } from "./RaidRolesArgumentType";
 import { RtiBotGuild } from "./RtiBotGuild";
 import { CategoryChannelArgumentType } from "./base/CategoryChannelArgumentType";
 import { TextChannelArgumentType } from "./base/TextChannelArgumentType";
 import { UserDialog } from "./base/prompt/UserDialog";
+import { RaidRolesArgumentType } from "./base/RaidRolesArgumentType";
 
 class App {
     private client: CommandoClient;
